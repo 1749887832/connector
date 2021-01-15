@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import port.views as V
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # 测试接口
-    path('ceshi/', V.Ce.Ceshi),
+    # 登录接口
+    path('login/', V.CustomObtainAuthToken.User_Login),
+    # 退出接口
+    path('logout/', V.CustomObtainAuthToken.User_Logout)
 ]
