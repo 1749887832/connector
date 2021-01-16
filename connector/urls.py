@@ -15,12 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import port.views as V
+from port.jky.oltp import user_login as user
+from port.jky.views import server_model as server
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 登录接口
-    path('login/', V.CustomObtainAuthToken.User_Login),
+    path('login/', user.User_Handle.User_Login),
     # 退出接口
-    path('logout/', V.CustomObtainAuthToken.User_Logout)
+    path('logout/', user.User_Handle.User_Logout),
+    # 服务列表
+    path('allserver/', server.Server_handle.show_server),
+    # 修改服务状态
+    path('updateserver/', server.Server_handle.delete_server),
+    # 添加服务
+    path('add-server/', server.Server_handle.add_server),
 ]
