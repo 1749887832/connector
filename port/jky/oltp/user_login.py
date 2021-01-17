@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import authenticate, login, logout
-from port.jky.msg_return import msg_return
+from port.jky.Controller import msg_return
 
 
 class User_Handle(ObtainAuthToken):
@@ -14,13 +14,12 @@ class User_Handle(ObtainAuthToken):
         self.POST = None
 
     def User_Login(self):
-        print(self.POST)
+        # print(self.POST)
         get_token = self.META.get('HTTP_AUTHORIZATION')
         username = self.POST.get('username')
         password = self.POST.get('password')
         user = authenticate(username=username, password=password)
-        print(user)
-        print(get_token, username, password)
+        # print(get_token, username, password)
         if user is not None:
             # 判断用户是否为可登录状态
             if user.is_active:
@@ -30,7 +29,7 @@ class User_Handle(ObtainAuthToken):
                 token = Token.objects.create(user=user)
                 # 记录用户为登录状态
                 login(self, user)
-                print(token)
+                # print(token)
                 return JsonResponse({'code': 1, 'msg': ' 成功', 'token': token.key}, safe=False)
             else:
                 return JsonResponse({'code': 1, 'msg': '当前账户没有激活，请联系管理员'}, safe=False)

@@ -25,9 +25,13 @@ urlpatterns = [
     # 退出接口
     path('logout/', user.User_Handle.User_Logout),
     # 服务列表
-    path('allserver/', server.Server_handle.show_server),
+    path('all-server/', server.Server_handle.show_server),
     # 修改服务状态
-    path('updateserver/', server.Server_handle.delete_server),
+    path('update-server/', server.Server_handle.update_server),
     # 添加服务
     path('add-server/', server.Server_handle.add_server),
+    # 删除服务
+    path('delete-server/',server.Server_handle.delete_server),
+    # 编辑服务
+    path('editserver/', server.Server_handle.edit_server),
 ]

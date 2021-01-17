@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 
-from port.jky.msg_return import msg_return
+from port.jky.Controller import msg_return
 from port.models import Server
+from port.jky.Controller import Login_check
 
 
 class Server_handle:
@@ -10,6 +11,7 @@ class Server_handle:
         self.POST = None
         self.GET = None
 
+    @Login_check.login_check
     def show_server(self):
         server_name = msg_return.Msg().ReNone(message=self.GET.get('servername'))
         page = int(self.GET.get('page'))
@@ -32,7 +34,8 @@ class Server_handle:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
-    def delete_server(self):
+    @Login_check.login_check
+    def update_server(self):
         server_id = self.POST.get('id')
         try:
             Server.objects.filter(id=server_id).update(
@@ -43,6 +46,7 @@ class Server_handle:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
+    @Login_check.login_check
     def add_server(self):
         print(self.POST)
         servername = self.POST.get('servername')
@@ -63,3 +67,32 @@ class Server_handle:
         except Exception as e:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+
+    @Login_check.login_check
+    def delete_server(self):
+        server_id = self.POST.get('id')
+        server_ip = self.POST.get('server_ip')
+        try:
+            if len(Server.objects.filter(id=server_id, server_ip=server_ip)) != 0:
+                Server.objects.filter(id=server_id).delete()
+                return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False)
+            else:
+                return JsonResponse(msg_return.Msg().Error(code=1001, msg='无该服务IP'), safe=False)
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+
+    @Login_check.login_check
+    def edit_server(self):
+        server_id = self.POST.get('server_id')
+        servername = self.POST.get('servername')
+        serverip = self.POST.get('serverip')
+        server_desc = self.POST.get('server_desc')
+        try:
+            Server.objects.filter(id=server_id).update(
+                server_name=servername,
+                server_ip=serverip,
+                server_describe=server_desc
+            )
+            return JsonResponse(msg_return.Msg().Success(msg='修改成功'), safe=False)
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
