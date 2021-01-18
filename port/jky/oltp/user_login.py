@@ -17,8 +17,8 @@ class User_Handle(ObtainAuthToken):
         self.POST = None
 
     def User_Login(self):
-        username = self.POST.get('username')
-        password = self.POST.get('password')
+        username = msg_check.Check_type(self).get('username')
+        password = msg_check.Check_type(self).get('password')
         user = authenticate(username=username, password=password)
         print(username, password)
         if user is not None:

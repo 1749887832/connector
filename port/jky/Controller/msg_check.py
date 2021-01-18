@@ -35,3 +35,17 @@ def request_type(request_func):
             return request_func(data)
 
     return request_fun
+
+
+class Check_type:
+    def __init__(self, request):
+        self.request = request
+        self.user_id = self.request.user.id
+        super().__init__()
+
+    def get(self, name):
+        if self.request.method == 'POST':
+            data = json.loads(self.request.body)
+            return data.get(name)
+        else:
+            return self.request.GET.get(name)
