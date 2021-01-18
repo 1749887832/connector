@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 from port.jky.Controller import msg_return
 from port.models import Server
-from port.jky.Controller import Login_check
+from port.jky.Controller import msg_check
 
 
 class Server_handle:
@@ -11,7 +11,7 @@ class Server_handle:
         self.POST = None
         self.GET = None
 
-    @Login_check.login_check
+    @msg_check.login_check
     def show_server(self):
         server_name = msg_return.Msg().ReNone(message=self.GET.get('servername'))
         page = int(self.GET.get('page'))
@@ -34,7 +34,7 @@ class Server_handle:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
-    @Login_check.login_check
+    @msg_check.login_check
     def update_server(self):
         server_id = self.POST.get('id')
         try:
@@ -46,7 +46,7 @@ class Server_handle:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
-    @Login_check.login_check
+    @msg_check.login_check
     def add_server(self):
         print(self.POST)
         servername = self.POST.get('servername')
@@ -68,7 +68,7 @@ class Server_handle:
             print(e)
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
-    @Login_check.login_check
+    @msg_check.login_check
     def delete_server(self):
         server_id = self.POST.get('id')
         server_ip = self.POST.get('server_ip')
@@ -81,7 +81,7 @@ class Server_handle:
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
-    @Login_check.login_check
+    @msg_check.login_check
     def edit_server(self):
         server_id = self.POST.get('server_id')
         servername = self.POST.get('servername')

@@ -1,25 +1,26 @@
+import json
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import authenticate, login, logout
-from port.jky.Controller import msg_return
+from port.jky.Controller import msg_return, msg_check
 
 
 class User_Handle(ObtainAuthToken):
     def __init__(self):
         super().__init__()
+        self.body = None
         self.user = None
         self.META = None
         self.POST = None
 
     def User_Login(self):
-        # print(self.POST)
-        get_token = self.META.get('HTTP_AUTHORIZATION')
         username = self.POST.get('username')
         password = self.POST.get('password')
         user = authenticate(username=username, password=password)
-        # print(get_token, username, password)
+        print(username, password)
         if user is not None:
             # 判断用户是否为可登录状态
             if user.is_active:
