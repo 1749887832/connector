@@ -2,7 +2,7 @@ class Msg:
     def __init__(self):
         super().__init__()
 
-    def Success(self, code=1, data=None, total=None, msg='成功'):
+    def Success(self, code=0, data=None, total=None, msg='成功'):
         record = {
             'code': code,
             'data': data,

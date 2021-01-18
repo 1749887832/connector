@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from port.jky.Controller import msg_return
 
@@ -13,8 +14,8 @@ def login_check(login_func):
             if len(Token.objects.filter(user_id=login_id, key=login_token)) != 0:
                 return login_func(data)
             else:
-                return msg_return.Msg().Error(code=1010, msg='请先登录')
+                return JsonResponse(msg_return.Msg().Error(code=1010, msg='请先登录'), safe=False)
         except Exception as e:
-            return msg_return.Msg().Error(code=-1, msg=str(e))
+            return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
 
     return func

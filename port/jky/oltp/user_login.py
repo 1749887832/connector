@@ -30,9 +30,9 @@ class User_Handle(ObtainAuthToken):
                 # 记录用户为登录状态
                 login(self, user)
                 # print(token)
-                return JsonResponse({'code': 1, 'msg': ' 成功', 'token': token.key}, safe=False)
+                return JsonResponse({'code': 0, 'msg': ' 成功', 'token': token.key}, safe=False)
             else:
-                return JsonResponse({'code': 1, 'msg': '当前账户没有激活，请联系管理员'}, safe=False)
+                return JsonResponse({'code': 0, 'msg': '当前账户没有激活，请联系管理员'}, safe=False)
         else:
             return JsonResponse({'code': -1, 'msg': '用户名或密码错误'}, safe=False)
 
