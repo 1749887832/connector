@@ -37,6 +37,12 @@ def request_type(request_func):
     return request_fun
 
 
+# 这是处理请求的方法
+"""
+    勿动
+"""
+
+
 class Check_type:
     def __init__(self, request):
         self.request = request

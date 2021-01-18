@@ -13,3 +13,5 @@ class Server(models.Model):
     server_describe = models.CharField(max_length=128, null=True)
     # 状态
     server_status = models.CharField(max_length=32, null=False, default='true')
+    # 创建时间
+    create_time = models.DateTimeField(null=True)
