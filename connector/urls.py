@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from port.jky.oltp import user_login as user
-from port.jky.views import server_model as server
+from port.jky.views.system_model import server_model as server
+from port.jky.views.system_model import global_model as system_global
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,4 +35,6 @@ urlpatterns = [
     path('delete-server/',server.Server_handle.delete_server),
     # 编辑服务
     path('editserver/', server.Server_handle.edit_server),
+    # 获取系统变量
+    path('show-global/',system_global.Global_handle.show_global)
 ]
