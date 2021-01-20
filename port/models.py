@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+from datetime import datetime
 
 # Create your models here.
 Test_status = [
@@ -52,7 +52,7 @@ class Test(models.Model):
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=timezone.now(), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 执行人
     execute_user = models.IntegerField(null=True, verbose_name='执行人')
     # 最后一次执行时间

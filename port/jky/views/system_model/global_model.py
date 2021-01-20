@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from port.jky.Controller import msg_return
+from port.jky.Controller import msg_return, msg_check
 
 from port.models import Global
 
@@ -9,6 +9,7 @@ class Global_handle:
     def __init__(self):
         super().__init__()
 
+    @msg_check.login_check
     def show_global(self):
         try:
             allglobal = Global.objects.all()
