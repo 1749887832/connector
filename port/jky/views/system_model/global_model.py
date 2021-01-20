@@ -22,7 +22,7 @@ class Global_handle:
                 context['globals_type'] = i.globals_type
                 context['use_type'] = i.use_type
                 context['cite_arguments'] = i.cite_arguments
-                context['create_time'] = i.create_time
+                context['create_time'] = i.create_time.strftime('%Y-%m-%d %H:%M:%S')
                 context['content'] = i.content
                 context['create_user'] = i.create_user
                 data.append(context)
