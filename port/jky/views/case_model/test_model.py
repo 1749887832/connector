@@ -45,3 +45,7 @@ class Test_handle:
             return JsonResponse(msg_return.Msg().Success(data=data, msg='成功', total=total), safe=False)
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
+
+    @msg_check.login_check
+    def add_Step(self):
+        return JsonResponse(msg_return.Msg().Success(), safe=False)
