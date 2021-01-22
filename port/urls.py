@@ -28,4 +28,6 @@ urlpatterns = [
     path('add-case/', system_test.Test_handle.add_Test),
     # 添加用例步骤
     path('add-step/',system_test.Test_handle.add_Step),
+    # 用例步骤的调试
+    path('debug-step/',system_test.Test_handle.debug_Step),
 ]

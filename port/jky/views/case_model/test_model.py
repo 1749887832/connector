@@ -49,3 +49,15 @@ class Test_handle:
     @msg_check.login_check
     def add_Step(self):
         return JsonResponse(msg_return.Msg().Success(), safe=False)
+
+    @msg_check.login_check
+    def debug_Step(self):
+        debug_step = msg_check.Check_type(self)
+        url = debug_step.get('step_url')
+        request_type = debug_step.get('step_type')
+        request_body = debug_step.get('step_data')
+        assert_data = debug_step.get('assert_name')
+        print(url,request_type,request_body,assert_data)
+
+        print(self.POST)
+        return JsonResponse(msg_return.Msg().Success(), self=False)
