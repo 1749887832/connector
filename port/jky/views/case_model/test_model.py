@@ -1,6 +1,7 @@
 from django.http import JsonResponse
-from port.jky.Controller import msg_return, msg_check
+from port.jky.Controller import msg_return, msg_check, debug_Test
 from port.models import Test
+from port.jky.Controller.Token import debug_token
 
 
 class Test_handle:
@@ -50,14 +51,27 @@ class Test_handle:
     def add_Step(self):
         return JsonResponse(msg_return.Msg().Success(), safe=False)
 
+    """
+        author：liuhuangxin
+        time:2021年1月23日13:56:40
+    """
+
     @msg_check.login_check
     def debug_Step(self):
         debug_step = msg_check.Check_type(self)
+        # 请求的接口
         url = debug_step.get('step_url')
+        # 请求的类型
         request_type = debug_step.get('step_type')
-        request_body = debug_step.get('step_data')
+        # 请求的参数
+        request_body = debug_step.get('step_content')
+        # 断言参数
         assert_data = debug_step.get('assert_name')
-        print(url,request_type,request_body,assert_data)
-
-        print(self.POST)
-        return JsonResponse(msg_return.Msg().Success(), self=False)
+        print(url, request_type, request_body, assert_data)
+        # 获取到token
+        token = debug_token.Test_Token('https://yf1.jkwljy.com').get_token()
+        print(token)
+        headers = {'Content-Type': 'application/json;charset=UTF-8', 'Authorization': token}
+        request_data = debug_Test.start('https://yf1.jkwljy.com' + url, headers, request_type, request_body, assert_data)
+        print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', request_data)
+        return JsonResponse(msg_return.Msg().Success(data=request_data), safe=False)
