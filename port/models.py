@@ -63,3 +63,37 @@ class Test(models.Model):
     test_single = models.IntegerField(null=True, verbose_name='所属测试单')
     # 用例所属模块
     test_model = models.CharField(max_length=32, null=True, verbose_name='所属模块')
+
+
+class Step(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 接口地址
+    step_url = models.CharField(max_length=128, null=False, verbose_name='接口地址')
+    # 请求方式
+    request_type = models.CharField(max_length=32, null=False, verbose_name='请求方式')
+    # 请求参数
+    request_data = models.CharField(max_length=1024, null=False, verbose_name='请求参数')
+    # 是否获取参数
+    get_global = models.CharField(max_length=32, null=True, verbose_name='是否获取参数')
+    # 使用的变量名
+    use_global = models.CharField(max_length=32, null=True, verbose_name='变量名')
+    # 获取的参数名
+    argument = models.CharField(max_length=32, null=True, verbose_name='参数名')
+    # 请求返回结果
+    response_result = models.CharField(max_length=10000, null=True, verbose_name='响应信息')
+    # 步骤结果
+    result = models.CharField(max_length=32, null=True, verbose_name='结果')
+    # 绑定的用例id
+    test_id = models.IntegerField(null=True, verbose_name='用例ID')
+
+
+class Assert(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 参数
+    argument = models.CharField(max_length=64, null=False, verbose_name='断言参数')
+    # 断言类型
+    assert_type = models.CharField(max_length=64, null=False, verbose_name='断言类型')
+    # 断言期望
+    assert_expect = models.CharField(max_length=64, null=False, verbose_name='断言期望')
+    # 接口ID
+    step_id = models.IntegerField(null=False,verbose_name='步骤ID')
