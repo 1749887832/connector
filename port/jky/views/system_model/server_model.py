@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 
 from port.jky.Controller import msg_return
@@ -9,22 +11,27 @@ import datetime
 class Server_handle:
     def __init__(self):
         super().__init__()
+        self.body = None
         self.POST = None
         self.GET = None
 
     # 显示所有的服务
     @msg_check.login_check
     def show_server(self):
-        data = msg_check.Check_type(self)
-        server_name = msg_return.Msg().ReNone(message=data.get('username'))
-        page = int(data.get('page'))
-        limit = int(data.get('limit'))
         try:
-            all_server = Server.objects.filter(server_name__icontains=server_name)
-            server = all_server[limit * (page - 1):limit * page]
-            total = len(all_server)
+            if len(self.body) == 0:
+                all_server = Server.objects.all()
+                total = len(all_server)
+            else:
+                data = msg_check.Check_type(self)
+                server_name = msg_return.Msg().ReNone(message=data.get('username'))
+                page = int(data.get('page'))
+                limit = int(data.get('limit'))
+                server = Server.objects.filter(server_name__icontains=server_name)
+                all_server = server[limit * (page - 1):limit * page]
+                total = len(server)
             data = []
-            for i in server:
+            for i in all_server:
                 content = dict()
                 content['id'] = i.id
                 content['name'] = i.server_name

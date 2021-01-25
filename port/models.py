@@ -8,6 +8,10 @@ Test_status = [
     ('2', '失败')
 ]
 
+"""
+    这是服务名表
+"""
+
 
 class Server(models.Model):
     id = models.AutoField(primary_key=True)
@@ -21,6 +25,11 @@ class Server(models.Model):
     server_status = models.CharField(max_length=32, null=False, default='true')
     # 创建时间
     create_time = models.DateTimeField(null=True)
+
+
+"""
+    这是系统变量名
+"""
 
 
 class Global(models.Model):
@@ -41,6 +50,11 @@ class Global(models.Model):
     content = models.CharField(max_length=128, null=True)
     # 创建人
     create_user = models.IntegerField(null=False)
+
+
+"""
+    这是测试用例
+"""
 
 
 class Test(models.Model):
@@ -65,6 +79,11 @@ class Test(models.Model):
     test_model = models.CharField(max_length=32, null=True, verbose_name='所属模块')
 
 
+"""
+    这是用例步骤
+"""
+
+
 class Step(models.Model):
     id = models.AutoField(primary_key=True)
     # 接口地址
@@ -87,6 +106,11 @@ class Step(models.Model):
     test_id = models.IntegerField(null=True, verbose_name='用例ID')
 
 
+"""
+    这是断言类型
+"""
+
+
 class Assert(models.Model):
     id = models.AutoField(primary_key=True)
     # 参数
@@ -97,3 +121,18 @@ class Assert(models.Model):
     assert_expect = models.CharField(max_length=64, null=False, verbose_name='断言期望')
     # 接口ID
     step_id = models.IntegerField(null=False, verbose_name='步骤ID')
+
+
+"""
+    这是系统请求头
+"""
+
+
+class Headers(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 请求名
+    headers_name = models.CharField(max_length=64, null=False, verbose_name='请求名')
+    # 请求体
+    headers_body = models.CharField(max_length=1024, null=False, verbose_name='请求体')
+    # 请求描述
+    headers_content = models.CharField(max_length=1024, null=True, verbose_name='请求描述')

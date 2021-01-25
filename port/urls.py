@@ -1,6 +1,7 @@
 from django.urls import path
 from port.jky.oltp import user_login as user
 from port.jky.views.system_model import server_model as server
+from port.jky.views.system_model import headers_model as headers
 from port.jky.views.system_model import global_model as system_global
 from port.jky.views.case_model import test_model as system_test
 from port.jky.views.case_model import step_model as system_step
@@ -22,7 +23,10 @@ urlpatterns = [
     path('editserver/', server.Server_handle.edit_server),
     # 获取系统变量
     path('show-global/', system_global.Global_handle.show_global),
-
+    # 添加请求头
+    path('add-headers/', headers.Headers_handle.add_headers),
+    # 显示请求头
+    path('show-headers/', headers.Headers_handle.show_headers),
     # 显示所有用例
     path('show-case/', system_test.Test_handle.show_Test),
     # 添加用例标题

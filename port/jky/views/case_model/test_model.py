@@ -61,6 +61,11 @@ class Test_handle:
         debug_step = msg_check.Check_type(self)
         # 请求的接口
         url = debug_step.get('step_url')
+        # 获取请求头信息
+        header_value = debug_step.get('header_value')
+        # 获取请求环境信息
+        server_value = debug_step.get('server_value')
+        print(header_value,server_value)
         # 请求的类型
         request_type = debug_step.get('step_type')
         # 请求的参数

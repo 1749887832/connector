@@ -16,7 +16,7 @@ def login_check(login_func):
             if len(Token.objects.filter(user_id=login_id, key=login_token)) != 0:
                 return login_func(data)
             else:
-                return JsonResponse(msg_return.Msg().Error(code=1010, msg='请先登录'), safe=False)
+                return JsonResponse(msg_return.Msg().Error(code=1010, msg='登录信息失效，请重新登录'), safe=False)
         except Exception as e:
             print(e)
             return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
