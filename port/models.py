@@ -96,4 +96,4 @@ class Assert(models.Model):
     # 断言期望
     assert_expect = models.CharField(max_length=64, null=False, verbose_name='断言期望')
     # 接口ID
-    step_id = models.IntegerField(null=False,verbose_name='步骤ID')
+    step_id = models.IntegerField(null=False, verbose_name='步骤ID')

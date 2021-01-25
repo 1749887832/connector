@@ -3,6 +3,7 @@ from port.jky.oltp import user_login as user
 from port.jky.views.system_model import server_model as server
 from port.jky.views.system_model import global_model as system_global
 from port.jky.views.case_model import test_model as system_test
+from port.jky.views.case_model import step_model as system_step
 
 urlpatterns = [
     # 登录接口
@@ -27,7 +28,9 @@ urlpatterns = [
     # 添加用例标题
     path('add-case/', system_test.Test_handle.add_Test),
     # 添加用例步骤
-    path('add-step/',system_test.Test_handle.add_Step),
+    path('add-step/', system_test.Test_handle.add_Step),
     # 用例步骤的调试
-    path('debug-step/',system_test.Test_handle.debug_Step),
+    path('debug-step/', system_test.Test_handle.debug_Step),
+    # 显示所有的用例步骤
+    path('show-step/', system_step.Step_handle.show_step),
 ]
