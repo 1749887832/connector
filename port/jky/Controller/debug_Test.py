@@ -19,14 +19,14 @@ class Test_Debug_Step:
     assert_result = list()
 
     def setup_class(self):
-        print(self)
-        Test_Debug_Step.assert_result = list()
-        Test_Debug_Step.response_body = list()
+        self.assert_result = list()
+        self.response_body = list()
 
     def test_case(self):
         # print('执行case', self.data)
         # print(type(self.data[-1]))
-        content = requests.post(url=self.data[0], headers=self.data[1], data=self.data[-1], verify=False)
+        print(type(self.data[-1]))
+        content = requests.post(url=self.data[0], headers=self.data[1], json=self.data[-1], verify=False)
         Test_Debug_Step().response_body.append(content.json())
         # print('执行case', Test_Debug_Step().request_body)
         # print(content.json())
@@ -71,9 +71,8 @@ class Test_Debug_Step:
         Test_Debug_Step.response_body.append(Test_Debug_Step.assert_result)
 
     def teardown_class(self):
-        print(self)
-        Test_Debug_Step.data = list()
-        Test_Debug_Step.assert_data = list()
+        self.data = list()
+        self.assert_data = list()
 
 
 def start(url, headers, request_type, request_body, assert_name):

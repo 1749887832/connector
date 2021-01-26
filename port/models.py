@@ -16,15 +16,17 @@ Test_status = [
 class Server(models.Model):
     id = models.AutoField(primary_key=True)
     # 名字
-    server_name = models.CharField(max_length=64, null=True)
+    server_name = models.CharField(max_length=64, null=True, verbose_name='环境名')
     # ip地址
-    server_ip = models.CharField(max_length=128, null=False)
+    server_ip = models.CharField(max_length=128, null=False, verbose_name='环境IP')
     # 描述
-    server_describe = models.CharField(max_length=128, null=True)
+    server_describe = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 状态
-    server_status = models.CharField(max_length=32, null=False, default='true')
+    server_status = models.CharField(max_length=32, null=False, default='true', verbose_name='状态')
+    # 创建人
+    create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=True)
+    create_time = models.DateTimeField(null=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
 
 
 """
@@ -35,21 +37,21 @@ class Server(models.Model):
 class Global(models.Model):
     id = models.AutoField(primary_key=True)
     # 名字
-    globals_name = models.CharField(max_length=32, null=True)
+    globals_name = models.CharField(max_length=32, null=True, verbose_name='变量名')
     # 使用变量
-    use_name = models.CharField(max_length=32, null=True)
+    use_name = models.CharField(max_length=32, null=True, verbose_name='使用名')
     # 变量类型
-    globals_type = models.CharField(max_length=32, null=False)
+    globals_type = models.CharField(max_length=32, null=False, verbose_name='变量类型')
     # 类型(1表示实时，0表示固定)
-    use_type = models.CharField(max_length=32, null=False)
+    use_type = models.CharField(max_length=32, null=False, verbose_name='类型')
     # 引用参数变量
-    cite_arguments = models.CharField(max_length=32, null=False)
+    cite_arguments = models.CharField(max_length=32, null=False, verbose_name='参数名')
     # 创建时间
-    create_time = models.DateTimeField(null=True)
+    create_time = models.DateTimeField(null=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 描述
-    content = models.CharField(max_length=128, null=True)
+    content = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 创建人
-    create_user = models.IntegerField(null=False)
+    create_user = models.IntegerField(null=False, verbose_name='创建人')
 
 
 """
@@ -98,8 +100,12 @@ class Step(models.Model):
     use_global = models.CharField(max_length=32, null=True, verbose_name='变量名')
     # 获取的参数名
     argument = models.CharField(max_length=32, null=True, verbose_name='参数名')
+    # 创建人
+    create_user = models.IntegerField(null=True, verbose_name='创建人')
+    # 创建时间
+    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 请求返回结果
-    response_result = models.CharField(max_length=10000, null=True, verbose_name='响应信息')
+    response_result = models.CharField(max_length=16384, null=True, verbose_name='响应信息')
     # 步骤结果
     result = models.CharField(max_length=32, null=True, verbose_name='结果')
     # 绑定的用例id
@@ -136,3 +142,7 @@ class Headers(models.Model):
     headers_body = models.CharField(max_length=1024, null=False, verbose_name='请求体')
     # 请求描述
     headers_content = models.CharField(max_length=1024, null=True, verbose_name='请求描述')
+    # 创建人
+    create_user = models.IntegerField(null=False, verbose_name='创建人')
+    # 创建时间
+    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')

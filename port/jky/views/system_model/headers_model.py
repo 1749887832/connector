@@ -7,6 +7,7 @@ from port.models import Headers
 class Headers_handle:
     def __init__(self):
         super().__init__()
+        self.user = None
 
     @msg_check.login_check
     def show_headers(self):
@@ -35,7 +36,8 @@ class Headers_handle:
             header = Headers.objects.create(
                 headers_name=header_name,
                 headers_body=header_data,
-                headers_content=header_content
+                headers_content=header_content,
+                create_user=self.user.id
             )
             header.save()
             return JsonResponse(msg_return.Msg().Success(), safe=False)

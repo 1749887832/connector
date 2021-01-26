@@ -11,6 +11,7 @@ import datetime
 class Server_handle:
     def __init__(self):
         super().__init__()
+        self.user = None
         self.body = None
         self.POST = None
         self.GET = None
@@ -72,7 +73,8 @@ class Server_handle:
                     server_name=servername,
                     server_ip=serverip,
                     server_describe=server_desc,
-                    create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    create_user=self.user.id
                 )
                 new_server.save()
                 return JsonResponse(msg_return.Msg().Success(msg='服务IP添加成功'), safe=False)
