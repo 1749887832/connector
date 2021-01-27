@@ -1,6 +1,11 @@
 import requests
 import urllib3
 
+"""
+    author:liuhuangxin
+    time:2021年1月23日13:58:52
+"""
+
 
 class All_Stoarage:
     def __init__(self, ip=None):
