@@ -3,8 +3,9 @@ from port.models import Global
 
 
 class Replace:
-    def __init__(self, msg=None):
+    def __init__(self, msg=None, url=None):
         self.msg = msg
+        self.url = url
         self.data = list()
         super().__init__()
 
@@ -23,8 +24,10 @@ class Replace:
         except Exception as e:
             print(e)
 
+    # 这是替换全局变量
     def Replace_globals(self):
         self.data = self.Get_globals()
+        print(self.data)
         try:
             for i in self.data:
                 print(i['use_name'])
@@ -34,9 +37,16 @@ class Replace:
                     if i['use_type'] == '1':
                         # 判断使用的变量是int还是str
                         if i['globals_type'] == 'str':
-                            self.msg = self.msg.replace(i['use_name'], '"' + getattr(Storage.All_Stoarage(), i['cite_arguments']) + '"')
+                            print('this')
+                            if self.url is None:
+                                self.msg = self.msg.replace(i['use_name'], '"' + getattr(Storage.All_Stoarage(), i['cite_arguments']) + '"')
+                            else:
+                                self.msg = self.msg.replace(i['use_name'], '"' + getattr(Storage.All_Stoarage(ip=self.url), i['cite_arguments']) + '"')
                         elif i['globals_type'] == 'int':
-                            self.msg = self.msg.replace(i['use_name'], getattr(Storage.All_Stoarage(), i['cite_arguments']))
+                            if self.url is None:
+                                self.msg = self.msg.replace(i['use_name'], getattr(Storage.All_Stoarage(), i['cite_arguments']))
+                            else:
+                                self.msg = self.msg.replace(i['use_name'], getattr(Storage.All_Stoarage(ip=self.url), i['cite_arguments']))
                     elif i['use_type'] == '0':
                         self.msg = self.msg.replace(i['use_name'], i['cite_arguments'])
                 else:
@@ -44,3 +54,4 @@ class Replace:
             return self.msg
         except Exception as e:
             print(e)
+            return self.msg

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 
 from port.jky.Controller import msg_check, msg_return, debug_Test
+from port.jky.Controller.Funstorage import replace
 from port.jky.Controller.Token import debug_token
 from port.models import Step, Server, Headers
 
@@ -52,6 +53,7 @@ class Step_handle:
         headers_id = debug_step.get('header_value')
         header_name = Headers.objects.get(id=headers_id).headers_body
         print(server_ip, header_name)
+        print(replace.Replace(msg=header_name, url=server_ip).Replace_globals())
         # 请求的接口
         url = debug_step.get('step_url')
         # 获取请求头信息

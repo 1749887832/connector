@@ -25,7 +25,7 @@ SECRET_KEY = 'f==4xrg)h6%-pmsgqzrwhmeswe(c)pth4-)pq@tjo795g_v!%u'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.44.158', '127.0.0.1', '192.168.2.5', '192.168.0.107', '192.168.2.9']
+ALLOWED_HOSTS = ['192.168.44.158', '127.0.0.1', '192.168.2.4', '192.168.0.107', '192.168.2.9', '192.168.0.102']
 
 # Application definition
 
@@ -122,7 +122,7 @@ DATABASES = {
         'HOST': 'localhost',  # 数据库主机
         'PORT': '3306',  # 数据库端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': '123',  # 数据库密码
+        'PASSWORD': 'liu088251',  # 数据库密码
     }
 }
 # Password validation
