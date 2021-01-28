@@ -37,7 +37,6 @@ class Replace:
                     if i['use_type'] == '1':
                         # 判断使用的变量是int还是str
                         if i['globals_type'] == 'str':
-                            print('this')
                             if self.url is None:
                                 self.msg = self.msg.replace(i['use_name'], '"' + getattr(Storage.All_Stoarage(), i['cite_arguments']) + '"')
                             else:

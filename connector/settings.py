@@ -122,7 +122,7 @@ DATABASES = {
         'HOST': 'localhost',  # 数据库主机
         'PORT': '3306',  # 数据库端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': 'liu088251',  # 数据库密码
+        'PASSWORD': '123',  # 数据库密码
     }
 }
 # Password validation

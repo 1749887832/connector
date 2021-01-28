@@ -1,3 +1,5 @@
+import json
+
 import pytest
 import requests
 import jsonpath
@@ -17,77 +19,132 @@ class Test_Debug_Step:
     assert_data = list()
     # 断言结果
     assert_result = list()
+    # 参数结果
+    globals_result = list()
+    # 是否获取参数
+    is_delivery = list()
 
     def setup_class(self):
         self.assert_result = list()
         self.response_body = list()
 
     def test_case(self):
-        # print('执行case', self.data)
-        # print(type(self.data[-1]))
-        print(type(self.data[-1]))
-        content = requests.post(url=self.data[0], headers=self.data[1], json=self.data[-1], verify=False)
+        print(self.data[0])
+        # 判断是POST请求还是GET请求
+        if self.data[0].upper() == 'POST':
+            content = requests.post(url=self.data[1], headers=json.loads(self.data[2]), data=self.data[3], verify=False)
+        else:
+            content = requests.get(url=self.data[1], headers=json.loads(self.data[2]), params=self.data[3], verify=False)
+        # print(content)
         Test_Debug_Step().response_body.append(content.json())
-        # print('执行case', Test_Debug_Step().request_body)
-        # print(content.json())
+        # 循环取出断言
         for assert_name in Test_Debug_Step().assert_data[0]:
-            # print(content.json())
             # print(assert_name['name'])
             # print(jsonpath.jsonpath(content.json(), assert_name['name']))
+            # 取出断言实际结果
             result = jsonpath.jsonpath(content.json(), assert_name['name'])
-            print(result)
             # print(result)
+            # 判断断言参数是否存在
             if result:
                 # print(assert_name['name'])
                 try:
+                    # 判断断言类型和参数类型
                     if assert_name['type'] == 'equal':
-                        assert result[0] == assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] == int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] == float(assert_name['value'])
+                        else:
+                            assert result[0] == assert_name['value']
                     elif assert_name['type'] == 'not_equal':
-                        assert result[0] != assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] != int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] != float(assert_name['value'])
+                        else:
+                            assert result[0] != assert_name['value']
                     elif assert_name['type'] == 'less':
-                        assert result[0] < assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] > int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] > float(assert_name['value'])
+                        else:
+                            assert result[0] > assert_name['value']
                     elif assert_name['type'] == 'greater':
-                        assert result[0] > assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] < int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] < float(assert_name['value'])
+                        else:
+                            assert result[0] < assert_name['value']
                     elif assert_name['type'] == 'less_equal':
-                        assert result[0] <= assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] <= int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] <= float(assert_name['value'])
+                        else:
+                            assert result[0] <= assert_name['value']
                     elif assert_name['type'] == 'greater_equal':
-                        assert result[0] >= assert_name['value']
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] >= int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] >= float(assert_name['value'])
+                        else:
+                            assert result[0] >= assert_name['value']
                     elif assert_name['type'] == 'in_to':
-                        assert assert_name['value'] in result
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] in int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] in float(assert_name['value'])
+                        else:
+                            assert result[0] in assert_name['value']
                     elif assert_name['type'] == 'not_in':
-                        assert assert_name['value'] not in result
+                        if assert_name['argument_type'] == 'int':
+                            assert result[0] not in int(assert_name['value'])
+                        elif assert_name['argument_type'] == 'float':
+                            assert result[0] not in float(assert_name['value'])
+                        else:
+                            assert result[0] not in assert_name['value']
                     # else:
                     #     print('断言失败')
-                    print(assert_name['name'], '断言成功')
+                    # print(assert_name['name'], '断言成功')
                     Test_Debug_Step.assert_result.append({'code': 0, 'assert_result': '断言成功'})
                 except Exception as e:
                     print(e)
-                    print(assert_name['name'], '断言失败')
+                    # print(assert_name['name'], '断言失败')
                     Test_Debug_Step.assert_result.append({'code': -1, 'assert_result': '断言失败'})
             else:
-                print('找不到该断言参数', assert_name['name'])
+                # print('找不到该断言参数', assert_name['name'])
                 Test_Debug_Step.assert_result.append({'code': -1, 'assert_result': '找不到该断言参数'})
 
-        Test_Debug_Step.response_body.append(Test_Debug_Step.assert_result)
+        Test_Debug_Step().response_body.append(Test_Debug_Step.assert_result)
+        if Test_Debug_Step().is_delivery[0]:
+            for all_globals in self.data[4]:
+                global_all = jsonpath.jsonpath(content.json(), all_globals['argument'])
+                if global_all:
+                    Test_Debug_Step.globals_result.append({'code': 0, 'msg': global_all[int(all_globals['index'])]})
+                else:
+                    Test_Debug_Step.globals_result.append({'code': -1, 'msg': '没有找到该参数'})
+            Test_Debug_Step().response_body.append(Test_Debug_Step.globals_result)
 
     def teardown_class(self):
         self.data = list()
         self.assert_data = list()
+        self.globals_result = list()
+        self.is_delivery = list()
 
 
-def start(url, headers, request_type, request_body, assert_name):
-    # print(assert_name)
-    print(request_type)
+def start(url, headers, request_type, request_body, assert_name, delivery, global_content):
+    # print(url, headers, request_type, request_body, assert_name)
     start_debug = Test_Debug_Step()
+    start_debug.data.append(request_type)
     start_debug.data.append(url)
     start_debug.data.append(headers)
     start_debug.data.append(request_body)
+    start_debug.data.append(global_content)
     start_debug.assert_data.append(assert_name)
-    # print('实例化', start_debug.data)
-    # print(url, headers, request_type)
-    # for i in args:
-    #     for j in i:
-    #         print(j)
+    start_debug.is_delivery.append(delivery)
+    print(delivery)
     pytest.main(['port/jky/Controller/debug_Test.py', '-vs'])
     print(start_debug.response_body)
     return start_debug.response_body

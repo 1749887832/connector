@@ -52,12 +52,10 @@ class Step_handle:
         # 获取请求头信息
         headers_id = debug_step.get('header_value')
         header_name = Headers.objects.get(id=headers_id).headers_body
-        print(server_ip, header_name)
-        print(replace.Replace(msg=header_name, url=server_ip).Replace_globals())
+        # print(server_ip, header_name)
+        headers = replace.Replace(msg=header_name, url=server_ip).Replace_globals()
         # 请求的接口
         url = debug_step.get('step_url')
-        # 获取请求头信息
-        header_value = debug_step.get('header_value')
         # 获取请求环境信息
         server_value = debug_step.get('server_value')
         # print(header_value, server_value)
@@ -65,11 +63,14 @@ class Step_handle:
         request_type = debug_step.get('step_type')
         # 请求的参数
         request_body = debug_step.get('step_content')
+        # print(replace.Replace(msg=request_body).Replace_globals())
+        body = replace.Replace(msg=request_body).Replace_globals()
         # 断言参数
         assert_data = debug_step.get('assert_name')
-        # 获取到token
-        token = debug_token.Test_Token('https://yf1.jkwljy.com').get_token()
-        headers = {'Content-Type': 'application/json;charset=UTF-8', 'Authorization': token}
-        # request_data = debug_Test.start('https://yf1.jkwljy.com' + url, headers, request_type, request_body, assert_data)
-        # print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', request_data)
-        return JsonResponse(msg_return.Msg().Success(), safe=False)
+        # 是否想要获取参数
+        delivery = debug_step.get('delivery')
+        # 获取想要的变量
+        global_content = debug_step.get('global_content')
+        print(global_content)
+        request_data = debug_Test.start(server_ip + url, headers, request_type, body, assert_data,delivery, global_content)
+        return JsonResponse(msg_return.Msg().Success(data=request_data), safe=False)
