@@ -29,7 +29,6 @@ class Test_Debug_Step:
         self.response_body = list()
 
     def test_case(self):
-        print(self.data[0])
         # 判断是POST请求还是GET请求
         if self.data[0].upper() == 'POST':
             content = requests.post(url=self.data[1], headers=json.loads(self.data[2]), data=self.data[3], verify=False)
@@ -144,7 +143,6 @@ def start(url, headers, request_type, request_body, assert_name, delivery, globa
     start_debug.data.append(global_content)
     start_debug.assert_data.append(assert_name)
     start_debug.is_delivery.append(delivery)
-    print(delivery)
     pytest.main(['port/jky/Controller/debug_Test.py', '-vs'])
-    print(start_debug.response_body)
+    # print(start_debug.response_body)
     return start_debug.response_body

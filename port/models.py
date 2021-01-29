@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-
+from django.utils import timezone
 # Create your models here.
 Test_status = [
     ('0', '未执行'),
@@ -26,7 +26,7 @@ class Server(models.Model):
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=True, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
 
 
 """
@@ -47,7 +47,7 @@ class Global(models.Model):
     # 引用参数变量
     cite_arguments = models.CharField(max_length=32, null=False, verbose_name='参数名')
     # 创建时间
-    create_time = models.DateTimeField(null=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=True, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 描述
     content = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 创建人
@@ -68,7 +68,7 @@ class Test(models.Model):
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 执行人
     execute_user = models.IntegerField(null=True, verbose_name='执行人')
     # 最后一次执行时间
@@ -96,20 +96,33 @@ class Step(models.Model):
     request_data = models.CharField(max_length=1024, null=False, verbose_name='请求参数')
     # 是否获取参数
     get_global = models.CharField(max_length=32, null=True, verbose_name='是否获取参数')
-    # 使用的变量名
-    use_global = models.CharField(max_length=32, null=True, verbose_name='变量名')
-    # 获取的参数名
-    argument = models.CharField(max_length=32, null=True, verbose_name='参数名')
     # 创建人
     create_user = models.IntegerField(null=True, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
     # 请求返回结果
     response_result = models.CharField(max_length=16384, null=True, verbose_name='响应信息')
     # 步骤结果
     result = models.CharField(max_length=32, null=True, verbose_name='结果')
+    # 步骤描述
+    step_content = models.CharField(max_length=128, null=True, verbose_name='步骤描述')
     # 绑定的用例id
     test_id = models.IntegerField(null=True, verbose_name='用例ID')
+
+
+"""
+    这是局部变量
+"""
+
+
+class Part(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 使用的变量名
+    use_global = models.CharField(max_length=32, null=True, verbose_name='变量名')
+    # 获取的参数名
+    argument = models.CharField(max_length=32, null=True, verbose_name='参数名')
+    # 绑定步骤id
+    step_id = models.IntegerField(null=True, verbose_name='步骤ID')
 
 
 """
@@ -123,6 +136,8 @@ class Assert(models.Model):
     argument = models.CharField(max_length=64, null=False, verbose_name='断言参数')
     # 断言类型
     assert_type = models.CharField(max_length=64, null=False, verbose_name='断言类型')
+    # 断言参数类型
+    argument_type = models.CharField(max_length=32, null=False, verbose_name='参数类型')
     # 断言期望
     assert_expect = models.CharField(max_length=64, null=False, verbose_name='断言期望')
     # 接口ID
@@ -145,4 +160,4 @@ class Headers(models.Model):
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
