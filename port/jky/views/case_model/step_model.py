@@ -26,8 +26,9 @@ class Step_handle:
                 content['request_type'] = step.request_type
                 content['request_data'] = step.request_data
                 content['get_global'] = step.get_global
-                content['argument'] = step.argument
                 content['response_result'] = step.response_result
+                content['create_time'] = step.create_time.strftime('%Y-%m-%d')
+                content['create_user'] = step.create_user
                 content['result'] = step.result
                 data.append(content)
             return JsonResponse(msg_return.Msg().Success(data=data, total=count), safe=False)
