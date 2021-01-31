@@ -37,6 +37,7 @@ class Headers_handle:
                 headers_name=header_name,
                 headers_body=header_data,
                 headers_content=header_content,
+                create_time=msg_return.ReturnTime.getnowTime(),
                 create_user=self.user.id
             )
             header.save()

@@ -1,3 +1,6 @@
+import datetime
+
+
 class Msg:
     def __init__(self):
         super().__init__()
@@ -22,3 +25,13 @@ class Msg:
         if message is None:
             message = ''
         return message
+
+
+class ReturnTime:
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def getnowTime():
+        now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        return now_time

@@ -1,11 +1,9 @@
-import json
-
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 from port.jky.Controller import msg_return
-from port.models import Server
+from port.models import Server, UserProfile
 from port.jky.Controller import msg_check
-import datetime
 
 
 class Server_handle:
@@ -25,7 +23,8 @@ class Server_handle:
                 total = len(all_server)
             else:
                 data = msg_check.Check_type(self)
-                server_name = msg_return.Msg().ReNone(message=data.get('username'))
+                server_name = msg_return.Msg().ReNone(message=data.get('servername'))
+                # print(server_name)
                 page = int(data.get('page'))
                 limit = int(data.get('limit'))
                 server = Server.objects.filter(server_name__icontains=server_name)
@@ -39,7 +38,8 @@ class Server_handle:
                 content['server_ip'] = i.server_ip
                 content['server_describe'] = i.server_describe
                 content['server_status'] = True if i.server_status == 'true' else False
-                content['create_time'] = i.create_time.strftime('%Y-%m-%d %H:%M:%S')
+                content['create_user'] = UserProfile.objects.get(user_id=User.objects.get(id=i.create_user).id).user_name
+                content['create_time'] = i.create_time.strftime('%Y-%m-%d')
                 data.append(content)
             return JsonResponse(msg_return.Msg().Success(data=data, total=total), safe=False)
         except Exception as e:
@@ -73,7 +73,7 @@ class Server_handle:
                     server_name=servername,
                     server_ip=serverip,
                     server_describe=server_desc,
-                    create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    create_time=msg_return.ReturnTime.getnowTime(),
                     create_user=self.user.id
                 )
                 new_server.save()

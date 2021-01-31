@@ -1,12 +1,36 @@
+from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
 from django.utils import timezone
+
 # Create your models here.
 Test_status = [
     ('0', '未执行'),
     ('1', '通过'),
     ('2', '失败')
 ]
+User_sex = [
+    ('0', '男'),
+    ('1', '女')
+]
+"""
+    这是用户表
+"""
+
+
+class UserProfile(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 姓名
+    user_name = models.CharField(max_length=62, null=True, verbose_name='用户名')
+    # 性别
+    user_sex = models.CharField(max_length=32, null=False, default=User_sex[0][1], verbose_name='性别')
+    # 所属部门
+    user_branch = models.CharField(max_length=64, null=True, verbose_name='所属部门')
+    # 电话
+    user_phone = models.CharField(max_length=64, null=True, verbose_name='电话')
+    # 绑定User表的id
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
 
 """
     这是服务名表
@@ -26,7 +50,7 @@ class Server(models.Model):
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=True, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=True, verbose_name='创建时间')
 
 
 """
@@ -47,7 +71,7 @@ class Global(models.Model):
     # 引用参数变量
     cite_arguments = models.CharField(max_length=32, null=False, verbose_name='参数名')
     # 创建时间
-    create_time = models.DateTimeField(null=True, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=True, verbose_name='创建时间')
     # 描述
     content = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 创建人
@@ -64,11 +88,11 @@ class Test(models.Model):
     # 用例标题
     test_name = models.CharField(max_length=32, null=False, verbose_name='标题')
     # 用例描述
-    test_content = models.CharField(max_length=1024, null=True, verbose_name='描述')
+    test_content = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, verbose_name='创建时间')
     # 执行人
     execute_user = models.IntegerField(null=True, verbose_name='执行人')
     # 最后一次执行时间
@@ -93,15 +117,15 @@ class Step(models.Model):
     # 请求方式
     request_type = models.CharField(max_length=32, null=False, verbose_name='请求方式')
     # 请求参数
-    request_data = models.CharField(max_length=1024, null=False, verbose_name='请求参数')
+    request_data = models.TextField(null=False, verbose_name='请求参数')
     # 是否获取参数
     get_global = models.CharField(max_length=32, null=True, verbose_name='是否获取参数')
     # 创建人
     create_user = models.IntegerField(null=True, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, verbose_name='创建时间')
     # 请求返回结果
-    response_result = models.CharField(max_length=16384, null=True, verbose_name='响应信息')
+    response_result = models.TextField(null=True, verbose_name='响应信息')
     # 步骤结果
     result = models.CharField(max_length=32, null=True, verbose_name='结果')
     # 绑定请求头
@@ -156,10 +180,10 @@ class Headers(models.Model):
     # 请求名
     headers_name = models.CharField(max_length=64, null=False, verbose_name='请求名')
     # 请求体
-    headers_body = models.CharField(max_length=1024, null=False, verbose_name='请求体')
+    headers_body = models.TextField(null=False, verbose_name='请求体')
     # 请求描述
-    headers_content = models.CharField(max_length=1024, null=True, verbose_name='请求描述')
+    headers_content = models.CharField(max_length=128, null=True, verbose_name='请求描述')
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
-    create_time = models.DateTimeField(null=False, default=timezone.now().strftime('%Y-%m-%d %H:%M:%S'), verbose_name='创建时间')
+    create_time = models.DateTimeField(null=False, verbose_name='创建时间')

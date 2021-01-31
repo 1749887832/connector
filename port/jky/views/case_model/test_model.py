@@ -21,6 +21,7 @@ class Test_handle:
                 test_name=test_name,
                 test_model=test_model,
                 test_content=test_content,
+                create_time=msg_return.ReturnTime.getnowTime(),
                 create_user=userid
             )
             test.save()

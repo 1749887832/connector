@@ -64,6 +64,7 @@ class Step_handle:
                 get_global=step_delivery,
                 create_user=add_step.user_id,
                 step_content=step_content,
+                create_time=msg_return.ReturnTime.getnowTime(),
                 test_id=case_id
             )
             step_object.save()
