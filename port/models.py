@@ -104,6 +104,8 @@ class Step(models.Model):
     response_result = models.CharField(max_length=16384, null=True, verbose_name='响应信息')
     # 步骤结果
     result = models.CharField(max_length=32, null=True, verbose_name='结果')
+    # 绑定请求头
+    step_headers = models.IntegerField(null=True, verbose_name='请求头')
     # 步骤描述
     step_content = models.CharField(max_length=128, null=True, verbose_name='步骤描述')
     # 绑定的用例id
