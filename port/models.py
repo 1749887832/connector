@@ -66,8 +66,10 @@ class Global(models.Model):
     use_name = models.CharField(max_length=32, null=True, verbose_name='使用名')
     # 变量类型
     globals_type = models.CharField(max_length=32, null=False, verbose_name='变量类型')
-    # 类型(1表示实时，0表示固定)
+    # 状态(1表示实时，0表示固定)
     use_type = models.CharField(max_length=32, null=False, verbose_name='类型')
+    # 存储方法还是接口
+    globals_fun = models.CharField(max_length=32, null=True, verbose_name='实时方法')
     # 引用参数变量
     cite_arguments = models.CharField(max_length=32, null=False, verbose_name='参数名')
     # 创建时间
@@ -76,6 +78,25 @@ class Global(models.Model):
     content = models.CharField(max_length=128, null=True, verbose_name='描述')
     # 创建人
     create_user = models.IntegerField(null=False, verbose_name='创建人')
+
+
+"""
+    全局的接口
+"""
+
+
+class GlobalPort(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 接口url
+    globals_url = models.CharField(max_length=32, null=False, verbose_name='接口地址')
+    # 请求方式
+    globals_type = models.CharField(max_length=32, null=False, verbose_name='请求方式')
+    # 请求body
+    globals_body = models.TextField(null=True, verbose_name='请求参数')
+    # 获取参数
+    globals_argument = models.CharField(max_length=32, null=True, verbose_name='获取参数')
+    # 获取的下标
+    globals_index = models.IntegerField(null=True, verbose_name='下标')
 
 
 """
