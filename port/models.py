@@ -91,6 +91,8 @@ class GlobalPort(models.Model):
     globals_url = models.CharField(max_length=32, null=False, verbose_name='接口地址')
     # 请求方式
     globals_type = models.CharField(max_length=32, null=False, verbose_name='请求方式')
+    # 请求头
+    globals_headers = models.IntegerField(null=False, verbose_name='请求头')
     # 请求body
     globals_body = models.TextField(null=True, verbose_name='请求参数')
     # 获取参数
