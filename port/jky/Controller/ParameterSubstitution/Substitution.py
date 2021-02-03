@@ -1,74 +1,112 @@
+import json
+
 import jsonpath
 import requests
 import urllib3
 
-from port.models import Global, GlobalPort
+from port.jky.Controller.Funstorage import Storage
+from port.models import Global, GlobalPort, Headers
+
+
+def GetGlobalsList():
+    allglobals = Global.objects.all()
+    data = list()
+    for allglobal in allglobals:
+        content = dict()
+        content['id'] = allglobal.id
+        content['globals_name'] = allglobal.globals_name
+        content['use_name'] = allglobal.use_name
+        content['globals_type'] = allglobal.globals_type
+        content['use_type'] = allglobal.use_type
+        content['globals_fun'] = allglobal.globals_fun
+        content['cite_arguments'] = allglobal.cite_arguments
+        data.append(content)
+    return data
 
 
 class Substitution:
-    def __init__(self):
-        self.AllGlobal = self.GetGlobalsList()
+    def __init__(self, url=None):
+        self.url = url
+        self.AllGlobal = GetGlobalsList()
         super().__init__()
 
-    @staticmethod
-    def GetGlobalsList():
-        allglobals = Global.objects.all()
-        data = list()
-        for allglobal in allglobals:
-            content = dict()
-            content['id'] = allglobal.id
-            content['globals_name'] = allglobal.globals_name
-            content['use_name'] = allglobal.use_name
-            content['globals_type'] = allglobal.globals_type
-            content['use_type'] = allglobal.use_type
-            content['globals_fun'] = allglobal.globals_fun
-            content['cite_arguments'] = allglobal.cite_arguments
-            data.append(content)
-        return data
-
     # 判断参数是否使用了全局变量
-    @staticmethod
-    def JudgeStatus(msg):
+    def JudgeStatus(self, msg):
+        print(Substitution().AllGlobal)
+        print(msg)
         for i in Substitution().AllGlobal:
+            print(i['use_name'])
             if i['use_name'] in msg:
                 # 执行替换的操作
-                Substitution().JudgeStatus(Substitution().JudgeType(i, msg))
-                pass
+                data = self.JudgeType(i, msg)
+                print(data)
+                msg = self.JudgeStatus(data)
         return msg
 
     # 判断是实时的还是固定的
-    @staticmethod
-    def JudgeType(body, msg):
+    def JudgeType(self, body, msg):
+        print(body, msg)
         if body['use_type'] == '1':
-            msg = Substitution().JudgeFun(body, msg)
+            msg = self.JudgeFun(body, msg)
         else:
             msg = msg.replace(body['use_name'], body['cite_arguments'])
         return msg
 
     # 判断是函数还是接口
-    @staticmethod
-    def JudgeFun(body, msg):
+    def JudgeFun(self, body, msg):
         if body['globals_fun'] == 'fun':
-            # msg = msg.replace(body['use_name'],getattr(Storage.All_Stoarage(),body['cite_arguments']))
-            pass
+            msg = msg.replace(body['use_name'], getattr(Storage.All_Stoarage(), body['cite_arguments']))
+            print(msg)
         else:
-            pass
+            print(body, msg)
+            msg = self.JudgePort(body, msg)
         return msg
 
     # 接口获取全局变量
-    @staticmethod
-    def JudgePort(body, msg):
-        globalport = GlobalPort.objects.get(body['cite_arguments'])
+    def JudgePort(self, body, msg):
+        globalport = GlobalPort.objects.get(id=body['cite_arguments'])
+        print(globalport)
         # 获取接口的请求头id
+        # msg = Substitution().JudgeStatus(body, msg)
         globalsheaders = globalport.globals_headers
+        print(globalsheaders)
         urllib3.disable_warnings()
+        # 判断接口是否有请求头
+        print(self.url)
         if globalsheaders is None:
-            content = requests.post(url=globalport.globals_url, json=globalport.globals_body, verify=False)
-            usegloabals = jsonpath.jsonpath(content.json(), body['globals_argument'])
-            if usegloabals:
-                usegloabals = usegloabals[int(body['globals_index'])]
-        if globalport.globals_type == 'POST':
-            content = requests.post(url=globalport.globals_url)
+            # 如果没有请求头那么就默认是获取登录的token
+            print(globalport.globals_body)
+            print(self.url + globalport.globals_url)
+            if globalport.globals_type == 'POST':
+                content = requests.post(url=self.url + globalport.globals_url, json=eval(globalport.globals_body), verify=False)
+            else:
+                content = requests.get(url=self.url + globalport.globals_url, params=globalport.globals_body, verify=False)
+        else:
+            # 获取请求头
+            globalbody = Headers.objects.get(id=globalsheaders).headers_body
+            headers = self.JudgeStatus(globalbody)
+            print(headers)
+            if globalport.globals_type == 'POST':
+                content = requests.post(url=self.url+globalport.globals_url, headers=json.dumps(headers), json=exec(globalport.globals_body.encode('utf-8')), verify=False)
+            else:
+                content = requests.get(url=self.url+globalport.globals_url, headers=headers, params=globalport.globals_body, verify=False)
+        print(content.json())
+        usegloabals = jsonpath.jsonpath(content.json(), globalport.globals_argument)
+        print(usegloabals)
+        if usegloabals:
+            msg = msg.replace(body['use_name'], usegloabals[int(globalport.globals_index)])
+        else:
+            msg = msg.replace(body['use_name'], 'undefined')
+        return msg
+
+    # 获取下标值
+    def JudgeIndex(self, body, msg):
+        usegloabals = jsonpath.jsonpath(msg.json(), body['globals_argument'])
+        if usegloabals:
+            msg = usegloabals[int(body['globals_index'])]
+        else:
+            msg = '未找到'
+        return msg
 
 
 if __name__ == '__main__':

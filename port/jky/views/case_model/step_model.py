@@ -4,11 +4,13 @@ from port.jky.Controller import msg_check, msg_return, debug_Test
 from port.jky.Controller.Funstorage import replace
 from port.jky.Controller.Token import debug_token
 from port.models import Step, Server, Headers, Assert, Part
+from port.jky.Controller.ParameterSubstitution import Substitution
 
 
 class Step_handle:
     def __init__(self):
         super().__init__()
+        self.POST = None
 
     @msg_check.login_check
     def show_step(self):
@@ -130,3 +132,9 @@ class Step_handle:
             return JsonResponse(msg_return.Msg().Success(data=request_data), safe=False)
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+
+    def debug_api(self):
+        msg = str(msg_check.Check_type(self).get('body'))
+        print(msg)
+        data = Substitution.Substitution(url='http://192.168.32.36:3000').JudgeStatus(msg)
+        return JsonResponse(msg_return.Msg().Success(data=data), safe=False)
