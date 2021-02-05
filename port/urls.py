@@ -38,5 +38,7 @@ urlpatterns = [
     # 显示所有的用例步骤
     path('show-step/', system_step.Step_handle.show_step),
     # 调试接口
-    path('debug-api/',system_step.Step_handle.debug_api)
+    path('debug-api/', system_step.Step_handle.debug_api),
+    # 添加变量接口
+    path('add_global/', system_global.Global_handle.add_global),
 ]

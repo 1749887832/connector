@@ -1,8 +1,12 @@
+import requests
+import urllib3
 from django.http import JsonResponse
 
 from port.jky.Controller import msg_check, msg_return, debug_Test
 from port.jky.Controller.Funstorage import replace
-from port.jky.Controller.Token import debug_token
+from port.jky.Controller.ParameterSubstitution.keyword import ChangeKeyword
+from port.jky.Controller.Requestreturns import Requestreturn
+from port.jky.Controller.getparameters.GetParameters import Parameters
 from port.models import Step, Server, Headers, Assert, Part
 from port.jky.Controller.ParameterSubstitution import Substitution
 
@@ -134,7 +138,38 @@ class Step_handle:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
     def debug_api(self):
-        msg = str(msg_check.Check_type(self).get('body'))
-        print(msg)
-        data = Substitution.Substitution(url='http://192.168.32.36:3000').JudgeStatus(msg)
-        return JsonResponse(msg_return.Msg().Success(data=data), safe=False)
+        apidata = msg_check.Check_type(self)
+        urlname = apidata.get('urlname')
+        urlbody = apidata.get('urlbody')
+        urltype = apidata.get('urltype')
+        server = apidata.get('server')
+        headers = apidata.get('headers')
+        # 获取参数
+        agrument = apidata.get('getvalue')
+        print(agrument)
+        # print(urlname, urltype)
+        # 返回了请求体
+        if msg_return.JudgeAllIsNull.checkandreturn(urlname, urltype):
+            try:
+                # 获取请求
+                serverip = Server.objects.get(id=server).server_ip
+                # 解析请求体
+                data = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(urlbody))
+                if headers not in ['', 'null', None]:
+                    # 获取请求头
+                    headersbody = Headers.objects.get(id=headers).headers_body
+                    # print(headersbody)
+                    # 解析请求头
+                    headers = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(headersbody))
+                # 获取调试结果
+                contendata = Requestreturn.RequestMsg.requestAndresponse(url=serverip + urlname, data=ChangeKeyword().ChangeData(data), requestype=urltype, headers=headers)
+                if agrument[0]:
+                    getparameters = Parameters.GetParameter(jsondata=contendata, getarument=agrument)
+                else:
+                    getparameters = ''
+                # print(contendata)
+            except Exception as e:
+                return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+        else:
+            return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
+        return JsonResponse(msg_return.Msg().Success(data={'list': contendata, 'extend': getparameters}), safe=False)

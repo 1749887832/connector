@@ -88,7 +88,7 @@ class Global(models.Model):
 class GlobalPort(models.Model):
     id = models.AutoField(primary_key=True)
     # 接口url
-    globals_url = models.CharField(max_length=32, null=False, verbose_name='接口地址')
+    globals_url = models.CharField(max_length=128, null=False, verbose_name='接口地址')
     # 请求方式
     globals_type = models.CharField(max_length=32, null=False, verbose_name='请求方式')
     # 请求头
