@@ -149,7 +149,7 @@ class Step_handle:
         print(agrument)
         # print(urlname, urltype)
         # 返回了请求体
-        if msg_return.JudgeAllIsNull.checkandreturn(urlname, urltype):
+        if msg_return.JudgeAllIsNull.checkandreturn(urlname, urltype, server):
             try:
                 # 获取请求
                 serverip = Server.objects.get(id=server).server_ip

@@ -51,35 +51,46 @@ class Global_handle:
         content = allglobal.get('content')
         print(statename, globalname, type(globaltype), type(globalstyle), type(globalstyle))
         try:
-            if len(Global.objects.filter(use_name=globalname)) == 0:
+            # 判断使用名是否存在
+            if len(Global.objects.filter(use_name=globalname)) != 0:
                 return JsonResponse(msg_return.Msg().Error(msg='使用名已存在!'), safe=False)
             else:
                 if globaltype in [0, '0']:
                     print('this')
-                    add = Global.objects.create(
-                        globals_name=statename,
-                        use_name=globalname,
-                        globals_type=globaltype,
-                        use_type=globalstyle,
-                        cite_arguments=globalagrument,
-                        create_time=msg_return.ReturnTime.getnowTime(),
-                        content=content,
-                        create_user=self.user.id
-                    )
-                else:
-                    print('here')
-                    if realtype in [0, '0']:
+                    # 存固定的变量
+                    if msg_return.JudgeAllIsNull.checkandreturn(statename, globalname, globaltype, globalstyle):
                         add = Global.objects.create(
                             globals_name=statename,
                             use_name=globalname,
-                            use_type=globalstyle,
                             globals_type=globaltype,
+                            use_type=globalstyle,
                             cite_arguments=globalagrument,
-                            globals_fun='fun',
-                            content=content,
                             create_time=msg_return.ReturnTime.getnowTime(),
+                            content=content,
                             create_user=self.user.id
                         )
+                    else:
+                        return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
+                else:
+                    print('here')
+                    # 存实时的函数
+                    if realtype in [0, '0']:
+                        # 获取函数名
+                        funname = allglobal.get('funname')
+                        if msg_return.JudgeAllIsNull.checkandreturn(funname, allglobal, statename, globalname, globaltype, realtype, globalstyle):
+                            add = Global.objects.create(
+                                globals_name=statename,
+                                use_name=globalname,
+                                use_type=globalstyle,
+                                globals_type=globaltype,
+                                cite_arguments=funname,
+                                globals_fun='fun',
+                                content=content,
+                                create_time=msg_return.ReturnTime.getnowTime(),
+                                create_user=self.user.id
+                            )
+                        else:
+                            return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
                     else:
                         # 获取接口参数
                         urlbody = allglobal.get('urlbody')
@@ -91,35 +102,38 @@ class Global_handle:
                         getvalue = allglobal.get('getvalue')
                         # 获取请求头
                         headers = allglobal.get('headers')
-                        if headers in ['null', None, '']:
-                            globaldata = GlobalPort.objects.create(
-                                globals_url=urlname,
-                                globals_type=urltype,
-                                globals_body=urlbody,
-                                globals_argument=getvalue[0]['urlarument'],
-                                globals_index=getvalue[0]['urlindex']
+                        if msg_return.JudgeAllIsNull.checkandreturn(statename, globalname, globaltype, urlname, urltype, urlbody, getvalue[0]['urlarument'], getvalue[0]['urlindex']):
+                            if headers in ['null', None, '']:
+                                globaldata = GlobalPort.objects.create(
+                                    globals_url=urlname,
+                                    globals_type=urltype,
+                                    globals_body=urlbody,
+                                    globals_argument=getvalue[0]['urlarument'],
+                                    globals_index=getvalue[0]['urlindex']
+                                )
+                            else:
+                                globaldata = GlobalPort.objects.create(
+                                    globals_url=urlname,
+                                    globals_type=urltype,
+                                    globals_body=urlbody,
+                                    globals_headers=headers,
+                                    globals_argument=getvalue[0]['urlarument'],
+                                    globals_index=getvalue[0]['urlindex']
+                                )
+                            add = Global.objects.create(
+                                use_type=globalstyle,
+                                globals_name=statename,
+                                use_name=globalname,
+                                globals_type=globaltype,
+                                cite_arguments=globaldata.id,
+                                globals_fun='port',
+                                content=content,
+                                create_time=msg_return.ReturnTime.getnowTime(),
+                                create_user=self.user.id
                             )
+                            globaldata.save()
                         else:
-                            globaldata = GlobalPort.objects.create(
-                                globals_url=urlname,
-                                globals_type=urltype,
-                                globals_body=urlbody,
-                                globals_headers=headers,
-                                globals_argument=getvalue[0]['urlarument'],
-                                globals_index=getvalue[0]['urlindex']
-                            )
-                        add = Global.objects.create(
-                            use_type=globalstyle,
-                            globals_name=statename,
-                            use_name=globalname,
-                            globals_type=globaltype,
-                            cite_arguments=globaldata.id,
-                            globals_fun='port',
-                            content=content,
-                            create_time=msg_return.ReturnTime.getnowTime(),
-                            create_user=self.user.id
-                        )
-                        globaldata.save()
+                            return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
                 add.save()
                 return JsonResponse(msg_return.Msg().Success(data='添加成功'), safe=False)
         except Exception as e:
