@@ -140,7 +140,7 @@ class Step_handle:
     def debug_api(self):
         apidata = msg_check.Check_type(self)
         urlname = apidata.get('urlname')
-        urlbody = apidata.get('urlbody')
+        urlbody = apidata.get('urlbody').encode('utf-8')
         urltype = apidata.get('urltype')
         server = apidata.get('server')
         headers = apidata.get('headers')
