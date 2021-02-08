@@ -163,7 +163,8 @@ class Step_handle:
                     headers = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(headersbody))
                 # 获取调试结果
                 contendata = Requestreturn.RequestMsg.requestAndresponse(url=serverip + urlname, data=ChangeKeyword().ChangeData(data), requestype=urltype, headers=headers)
-                if agrument[0]:
+                print(contendata)
+                if msg_return.JudgeAllIsNull.checkandreturn(agrument[0]['urlarument'], agrument[0]['urlindex']):
                     getparameters = Parameters.GetParameter(jsondata=contendata, getarument=agrument)
                 else:
                     getparameters = ''

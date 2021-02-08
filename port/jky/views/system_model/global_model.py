@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from port.jky.Controller import msg_return, msg_check
 
-from port.models import Global, GlobalPort
+from port.models import Global, GlobalPort, UserProfile
 
 
 class Global_handle:
@@ -13,10 +13,18 @@ class Global_handle:
     @msg_check.login_check
     def show_global(self):
         try:
-            allglobal = Global.objects.all()
+            showglobal = msg_check.Check_type(self)
+            limit = showglobal.get('limit')
+            page = showglobal.get('page')
+            start_time = showglobal.get('start_time') if showglobal.get('start_time') not in ['', None] else '1000-01-01 00:00:00'
+            end_time = showglobal.get('end_time') if showglobal.get('end_time') not in ['', None] else '2099-12-31 23:59:59'
+            chose_option = showglobal.get('chose_option')
+            globalname = showglobal.get('globalname')
+            allglobal = Global.objects.filter(globals_name__contains=globalname, create_time__range=(start_time, end_time), create_user__contains=chose_option)
+            globals = allglobal[limit * (page - 1):limit * page]
             total = len(allglobal)
             data = list()
-            for i in allglobal:
+            for i in globals:
                 context = dict()
                 context['id'] = i.id
                 context['globals_name'] = i.globals_name
@@ -26,7 +34,7 @@ class Global_handle:
                 context['cite_arguments'] = i.cite_arguments
                 context['create_time'] = i.create_time.strftime('%Y-%m-%d %H:%M:%S')
                 context['content'] = i.content
-                context['create_user'] = i.create_user
+                context['create_user'] = UserProfile.objects.get(user_id=i.create_user).user_name
                 data.append(context)
             return JsonResponse(msg_return.Msg().Success(data=data, total=total), safe=False)
         except Exception as e:
@@ -136,5 +144,17 @@ class Global_handle:
                             return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
                 add.save()
                 return JsonResponse(msg_return.Msg().Success(data='添加成功'), safe=False)
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+
+    def del_global(self):
+        try:
+            global_id = msg_check.Check_type(self).get('id')
+            print(global_id)
+            globals = Global.objects.get(id=global_id)
+            if globals.globals_type == '1' and globals.globals_fun == 'port':
+                GlobalPort.objects.filter(id=globals.cite_arguments).delete()
+            Global.objects.filter(id=global_id).delete()
+            return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False)
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)

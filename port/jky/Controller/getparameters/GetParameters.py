@@ -13,7 +13,7 @@ class Parameters:
                 msg = jsonpath.jsonpath(jsondata, i['urlarument'])
                 if msg:
                     if int(i['urlindex']) == -2:
-                        datalist.append(msg)
+                        datalist.append({'msg': msg})
                     else:
                         datalist.append({'msg': msg[int(i['urlindex'])]})
                 else:
