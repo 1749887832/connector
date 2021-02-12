@@ -71,7 +71,7 @@ class Global(models.Model):
     # 存储方法还是接口
     globals_fun = models.CharField(max_length=32, null=True, verbose_name='实时方法')
     # 引用参数变量
-    cite_arguments = models.CharField(max_length=32, null=False, verbose_name='参数名')
+    cite_arguments = models.TextField(null=False, verbose_name='参数名')
     # 创建时间
     create_time = models.DateTimeField(null=True, verbose_name='创建时间')
     # 描述
@@ -155,6 +155,8 @@ class Step(models.Model):
     step_headers = models.IntegerField(null=True, verbose_name='请求头')
     # 步骤描述
     step_content = models.CharField(max_length=128, null=True, verbose_name='步骤描述')
+    # 执行顺序
+    step_order = models.IntegerField(null=False, verbose_name='执行顺序')
     # 绑定的用例id
     test_id = models.IntegerField(null=True, verbose_name='用例ID')
 

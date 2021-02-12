@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from port.jky.Controller import msg_return, msg_check
-from port.models import Test
+from port.models import Test, UserProfile
 
 
 class Test_handle:
@@ -32,15 +32,23 @@ class Test_handle:
     @msg_check.login_check
     def show_Test(self):
         try:
-            all_test = Test.objects.all()
+            test = msg_check.Check_type(self)
+            casename = test.get('casename')
+            chose_option = test.get('chose_option')
+            end_time = test.get('end_time') if test.get('end_time') not in ['', None] else '2099-12-31 23:59:59'
+            start_time = test.get('start_time') if test.get('start_time') not in ['', None] else '1000-01-01 00:00:00'
+            page = int(test.get('page'))
+            limit = int(test.get('limit'))
+            all_test = Test.objects.filter(test_name__contains=casename, create_time__range=(start_time, end_time), create_user__contains=chose_option)
             total = len(all_test)
+            showtest = all_test[limit * (page - 1):limit * page]
             data = list()
-            for test in all_test:
+            for test in showtest:
                 context = dict()
                 context['id'] = test.id
                 context['test_name'] = test.test_name
                 context['test_content'] = test.test_content
-                context['create_user'] = test.create_user
+                context['create_user'] = UserProfile.objects.get(user_id=test.create_user).user_name
                 context['create_time'] = test.create_time.strftime('%Y-%m-%d %H:%M:%S')
                 data.append(context)
             return JsonResponse(msg_return.Msg().Success(data=data, msg='成功', total=total), safe=False)

@@ -5,6 +5,7 @@ import requests
 import urllib3
 
 from port.jky.Controller.Funstorage import Storage
+from port.jky.Controller.ParameterSubstitution.keyword import ChangeKeyword
 from port.models import Global, GlobalPort, Headers
 
 
@@ -45,7 +46,7 @@ class Substitution:
     # 判断是实时的还是固定的
     def JudgeType(self, body, msg):
         # print(body, msg)
-        if body['use_type'] in [1, '1']:
+        if body['globals_type'] in [1, '1']:
             msg = self.JudgeFun(body, msg)
         else:
             # msg = msg.replace(body['use_name'], body['cite_arguments'])
@@ -74,15 +75,15 @@ class Substitution:
         urllib3.disable_warnings()
         # 判断接口是否有请求头
         # print(self.url)
-        if globalsheaders is None:
+        if globalsheaders in ['', 'null', None]:
             # 如果没有请求头那么就默认是获取登录的token
             # print(globalport.globals_body)
             jsondata = self.JudgeStatus(globalport.globals_body)
             # print(self.url + globalport.globals_url)
             if globalport.globals_type == 'POST':
-                content = requests.post(url=self.url + globalport.globals_url, json=eval(jsondata), verify=False)
+                content = requests.post(url=self.url + globalport.globals_url, json=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
             else:
-                content = requests.get(url=self.url + globalport.globals_url, params=jsondata, verify=False)
+                content = requests.get(url=self.url + globalport.globals_url, params=ChangeKeyword().ChangeData(jsondata), verify=False)
         else:
             # 获取请求头
             globalbody = Headers.objects.get(id=globalsheaders).headers_body
@@ -90,9 +91,9 @@ class Substitution:
             # print(headers)
             # print(globalport.globals_url)
             if globalport.globals_type == 'POST':
-                content = requests.post(url=self.url + globalport.globals_url, headers=eval(headers), json=eval(globalport.globals_body.encode('utf-8')), verify=False)
+                content = requests.post(url=self.url + globalport.globals_url, headers=eval(headers), json=eval(ChangeKeyword().ChangeData(globalport.globals_body.decode('utf-8'))), verify=False)
             else:
-                content = requests.get(url=self.url + globalport.globals_url, headers=eval(headers), params=globalport.globals_body, verify=False)
+                content = requests.get(url=self.url + globalport.globals_url, headers=eval(headers), params=eval(ChangeKeyword().ChangeData(globalport.globals_body.decode('utf-8'))), verify=False)
         # print(content.json())
         usegloabals = jsonpath.jsonpath(content.json(), globalport.globals_argument)
         # print(usegloabals)
@@ -106,7 +107,7 @@ class Substitution:
 
     # 判断使用类型
     def JudgeChangeType(self, body, old, new):
-        if body['globals_type'] == 'str':
+        if body['use_type'] == 'str':
             msg = old.replace(body['use_name'], '"' + str(new) + '"')
         else:
             msg = old.replace(body['use_name'], str(new))

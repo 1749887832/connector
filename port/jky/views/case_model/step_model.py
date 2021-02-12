@@ -7,7 +7,7 @@ from port.jky.Controller.Funstorage import replace
 from port.jky.Controller.ParameterSubstitution.keyword import ChangeKeyword
 from port.jky.Controller.Requestreturns import Requestreturn
 from port.jky.Controller.getparameters.GetParameters import Parameters
-from port.models import Step, Server, Headers, Assert, Part
+from port.models import Step, Server, Headers, Assert, Part, UserProfile
 from port.jky.Controller.ParameterSubstitution import Substitution
 
 
@@ -21,11 +21,14 @@ class Step_handle:
         # 获取id
         test_step = msg_check.Check_type(self)
         test_id = test_step.get('id')
+        page = int(test_step.get('page'))
+        limit = int(test_step.get('limit'))
         try:
             all_step = Step.objects.filter(test_id=test_id)
             count = len(all_step)
+            showstep = all_step[limit * (page - 1):limit * page]
             data = list()
-            for step in all_step:
+            for step in showstep:
                 content = dict()
                 content['id'] = step.id
                 content['step_url'] = step.step_url
@@ -34,8 +37,9 @@ class Step_handle:
                 content['get_global'] = step.get_global
                 content['response_result'] = step.response_result
                 content['create_time'] = step.create_time.strftime('%Y-%m-%d')
-                content['create_user'] = step.create_user
+                content['create_user'] = UserProfile.objects.get(user_id=step.create_user).user_name
                 content['result'] = step.result
+                content['order'] = step.step_order
                 data.append(content)
             return JsonResponse(msg_return.Msg().Success(data=data, total=count), safe=False)
         except Exception as e:
@@ -71,6 +75,7 @@ class Step_handle:
                 create_user=add_step.user_id,
                 step_content=step_content,
                 create_time=msg_return.ReturnTime.getnowTime(),
+                step_order=1,
                 test_id=case_id
             )
             step_object.save()
@@ -113,7 +118,9 @@ class Step_handle:
             headers_id = debug_step.get('header_value')
             header_name = Headers.objects.get(id=headers_id).headers_body
             # print(server_ip, header_name)
-            headers = replace.Replace(msg=header_name, url=server_ip).Replace_globals()
+            # headers = replace.Replace(msg=header_name, url=server_ip).Replace_globals()
+            headers = Substitution.Substitution(url=server_ip).JudgeStatus(ChangeKeyword().ChangeData(header_name))
+            print(headers)
             # 请求的接口
             url = debug_step.get('step_url')
             # 获取请求环境信息
@@ -122,9 +129,14 @@ class Step_handle:
             # 请求的类型
             request_type = debug_step.get('step_type')
             # 请求的参数
-            request_body = debug_step.get('step_content').encode('utf-8')
+            request_body = debug_step.get('step_content')
             # print(replace.Replace(msg=request_body).Replace_globals())
-            body = replace.Replace(msg=request_body).Replace_globals()
+            # body = replace.Replace(msg=request_body).Replace_globals()
+            body = Substitution.Substitution().JudgeStatus(ChangeKeyword().ChangeData(request_body))
+            # 获取请求信息
+            print(body)
+            jsondata = Requestreturn.RequestMsg().requestAndresponse(url=server_ip + url, data=body, requestype=request_type, headers=headers)
+            print(jsondata)
             # 断言参数
             assert_data = debug_step.get('assert_name')
             # 是否想要获取参数
@@ -132,22 +144,33 @@ class Step_handle:
             # 获取想要的变量
             global_content = debug_step.get('global_content')
             # print(global_content)
-            request_data = debug_Test.start(server_ip + url, headers, request_type, body, assert_data, delivery, global_content)
-            return JsonResponse(msg_return.Msg().Success(data=request_data), safe=False)
+            # print(body, headers, request_type, server_ip + url)
+            # print(Requestreturn.RequestMsg().requestAndresponse(server_ip + url, body, request_type, headers))
+            request_data = debug_Test.start(jsondata, assert_data)
+            print(request_data)
+            print(type(delivery))
+            if delivery:
+                content = Parameters.GetParameter(jsondata=jsondata, getarument=global_content)
+            else:
+                content = None
+                print('this')
+                pass
+            return JsonResponse(msg_return.Msg().DebugSuccess(data={'list': jsondata, 'assert_result': request_data, 'extend': content}), safe=False)
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
 
+    @msg_check.login_check
     def debug_api(self):
         apidata = msg_check.Check_type(self)
         urlname = apidata.get('urlname')
-        urlbody = apidata.get('urlbody').encode('utf-8')
+        urlbody = apidata.get('urlbody')
         urltype = apidata.get('urltype')
         server = apidata.get('server')
         headers = apidata.get('headers')
         # 获取参数
         agrument = apidata.get('getvalue')
         print(agrument)
-        # print(urlname, urltype)
+        print(urlname, urltype, server, urlbody)
         # 返回了请求体
         if msg_return.JudgeAllIsNull.checkandreturn(urlname, urltype, server):
             try:
@@ -155,6 +178,7 @@ class Step_handle:
                 serverip = Server.objects.get(id=server).server_ip
                 # 解析请求体
                 data = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(urlbody))
+                print(data, serverip)
                 if headers not in ['', 'null', None]:
                     # 获取请求头
                     headersbody = Headers.objects.get(id=headers).headers_body
@@ -174,3 +198,17 @@ class Step_handle:
         else:
             return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
         return JsonResponse(msg_return.Msg().Success(data={'list': contendata, 'extend': getparameters}), safe=False)
+
+    @msg_check.login_check
+    def del_Step(self):
+        try:
+            delstep = msg_check.Check_type(self)
+            step_id = delstep.get('id')
+            if len(Assert.objects.filter(step_id=step_id)) > 0:
+                Assert.objects.filter(step_id=step_id).delete()
+            if len(Part.objects.filter(step_id=step_id)) > 0:
+                Part.objects.filter(step_id=step_id).delete()
+            Step.objects.filter(id=step_id).delete()
+            return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False)
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)

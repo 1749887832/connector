@@ -5,6 +5,19 @@ class Msg:
     def __init__(self):
         super().__init__()
 
+    def DebugSuccess(self, code=0, data=None, count=None, result=None, extend=None, msg='成功'):
+        record = {
+            'code': code,
+            'data': [
+                {
+                    'list': data,
+                }
+            ],
+            'count': count,
+            'msg': msg
+        }
+        return record
+
     def Success(self, code=0, data=None, total=None, extend=None, msg='成功'):
         if extend is None:
             record = {

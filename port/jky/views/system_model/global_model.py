@@ -57,14 +57,13 @@ class Global_handle:
         globalstyle = allglobal.get('globalstyle')
         # 获取描述
         content = allglobal.get('content')
-        print(statename, globalname, type(globaltype), type(globalstyle), type(globalstyle))
+        # print(statename, globalname, type(globaltype), type(globalstyle), type(globalstyle))
         try:
             # 判断使用名是否存在
             if len(Global.objects.filter(use_name=globalname)) != 0:
                 return JsonResponse(msg_return.Msg().Error(msg='使用名已存在!'), safe=False)
             else:
                 if globaltype in [0, '0']:
-                    print('this')
                     # 存固定的变量
                     if msg_return.JudgeAllIsNull.checkandreturn(statename, globalname, globaltype, globalstyle):
                         add = Global.objects.create(
@@ -80,7 +79,6 @@ class Global_handle:
                     else:
                         return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
                 else:
-                    print('here')
                     # 存实时的函数
                     if realtype in [0, '0']:
                         # 获取函数名
@@ -150,7 +148,7 @@ class Global_handle:
     def del_global(self):
         try:
             global_id = msg_check.Check_type(self).get('id')
-            print(global_id)
+            # print(global_id)
             globals = Global.objects.get(id=global_id)
             if globals.globals_type == '1' and globals.globals_fun == 'port':
                 GlobalPort.objects.filter(id=globals.cite_arguments).delete()

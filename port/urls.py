@@ -34,6 +34,8 @@ urlpatterns = [
     path('add-case/', system_test.Test_handle.add_Test),
     # 添加用例步骤
     path('add-step/', system_step.Step_handle.add_Step),
+    # 删除用例步骤
+    path('del-step/',system_step.Step_handle.del_Step),
     # 用例步骤的调试
     path('debug-step/', system_step.Step_handle.debug_Step),
     # 显示所有的用例步骤

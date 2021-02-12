@@ -17,7 +17,7 @@ class Parameters:
                     else:
                         datalist.append({'msg': msg[int(i['urlindex'])]})
                 else:
-                    continue
+                    datalist.append({'msg': '未找到该参数'})
             return datalist
         except Exception as e:
             return [{'msg': str(e)}]
