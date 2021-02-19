@@ -212,3 +212,29 @@ class Headers(models.Model):
     create_user = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
     create_time = models.DateTimeField(null=False, verbose_name='创建时间')
+
+
+# 这是系统项目模块
+class System(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 系统名
+    system_name = models.CharField(max_length=32, null=False, verbose_name='系统名')
+    # 创建时间
+    create_time = models.DateTimeField(null=False, verbose_name='创建时间')
+    # 创建人
+    create_user = models.IntegerField(null=False, verbose_name='创建人')
+
+
+# 创建系统模块
+class systemModel(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 模块名
+    systemName = models.CharField(max_length=32, null=False, verbose_name='模块名')
+    # 绑定系统id
+    systemId = models.IntegerField(null=False, verbose_name='系统ID')
+    # 绑定父级模块ID
+    systemFatherId = models.IntegerField(null=False, verbose_name='父级模块ID')
+    # 创建人
+    createUserID = models.IntegerField(null=False, verbose_name='创建人')
+    # 创建时间
+    createTime = models.DateTimeField(null=False, verbose_name='创建时间')

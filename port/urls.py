@@ -6,6 +6,7 @@ from port.jky.views.system_model import global_model as system_global
 from port.jky.views.case_model import test_model as system_test
 from port.jky.views.case_model import step_model as system_step
 from port.jky.views.user_model import show_user as show_user
+from port.jky.views.system_model import systemModel as sysModel
 
 urlpatterns = [
     # 登录接口
@@ -35,7 +36,7 @@ urlpatterns = [
     # 添加用例步骤
     path('add-step/', system_step.Step_handle.add_Step),
     # 删除用例步骤
-    path('del-step/',system_step.Step_handle.del_Step),
+    path('del-step/', system_step.Step_handle.del_Step),
     # 用例步骤的调试
     path('debug-step/', system_step.Step_handle.debug_Step),
     # 显示所有的用例步骤
@@ -48,4 +49,6 @@ urlpatterns = [
     path('show-user/', show_user.User_handle.show_user),
     # 删除变量
     path('del-global/', system_global.Global_handle.del_global),
+    # 添加模块
+    path('add/model/', sysModel.systemModel.addModel)
 ]
