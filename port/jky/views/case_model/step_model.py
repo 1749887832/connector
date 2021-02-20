@@ -122,7 +122,7 @@ class Step_handle:
             headers = Substitution.Substitution(url=server_ip).JudgeStatus(ChangeKeyword().ChangeData(header_name))
             print(headers)
             # 请求的接口
-            url = debug_step.get('step_url')
+            url = Substitution.Substitution(url=server_ip).JudgeStatus(ChangeKeyword().ChangeData(debug_step.get('step_url')))
             # 获取请求环境信息
             server_value = debug_step.get('server_value')
             # print(header_value, server_value)
@@ -178,6 +178,9 @@ class Step_handle:
                 serverip = Server.objects.get(id=server).server_ip
                 # 解析请求体
                 data = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(urlbody))
+                # 解析url
+                urlname = Substitution.Substitution(url=serverip).JudgeStatus(ChangeKeyword().ChangeData(urlname))
+                print(urlname)
                 print(data, serverip)
                 if headers not in ['', 'null', None]:
                     # 获取请求头
@@ -196,8 +199,8 @@ class Step_handle:
             except Exception as e:
                 return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
         else:
-            return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'))
-        return JsonResponse(msg_return.Msg().Success(data={'list': contendata, 'extend': getparameters}), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg='必填项不能为空!'), safe=False, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse(msg_return.Msg().Success(data={'list': contendata, 'extend': getparameters}), safe=False, json_dumps_params={'ensure_ascii': False})
 
     @msg_check.login_check
     def del_Step(self):

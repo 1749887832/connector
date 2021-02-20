@@ -33,6 +33,7 @@ class Substitution:
 
     # 判断参数是否使用了全局变量
     def JudgeStatus(self, msg):
+        print(msg)
         # print(Substitution().AllGlobal)
         for i in Substitution().AllGlobal:
             # print(i['use_name'])
@@ -75,15 +76,15 @@ class Substitution:
         urllib3.disable_warnings()
         # 判断接口是否有请求头
         # print(self.url)
+        jsondata = self.JudgeStatus(globalport.globals_body)
         if globalsheaders in ['', 'null', None]:
             # 如果没有请求头那么就默认是获取登录的token
             # print(globalport.globals_body)
-            jsondata = self.JudgeStatus(globalport.globals_body)
             # print(self.url + globalport.globals_url)
             if globalport.globals_type == 'POST':
                 content = requests.post(url=self.url + globalport.globals_url, json=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
             else:
-                content = requests.get(url=self.url + globalport.globals_url, params=ChangeKeyword().ChangeData(jsondata), verify=False)
+                content = requests.get(url=self.url + globalport.globals_url, params=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
         else:
             # 获取请求头
             globalbody = Headers.objects.get(id=globalsheaders).headers_body
@@ -91,12 +92,12 @@ class Substitution:
             # print(headers)
             # print(globalport.globals_url)
             if globalport.globals_type == 'POST':
-                content = requests.post(url=self.url + globalport.globals_url, headers=eval(headers), json=eval(ChangeKeyword().ChangeData(globalport.globals_body.decode('utf-8'))), verify=False)
+                content = requests.post(url=self.url + globalport.globals_url, headers=json.loads(headers), json=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
             else:
-                content = requests.get(url=self.url + globalport.globals_url, headers=eval(headers), params=eval(ChangeKeyword().ChangeData(globalport.globals_body.decode('utf-8'))), verify=False)
+                content = requests.get(url=self.url + globalport.globals_url, headers=json.loads(headers), params=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
         # print(content.json())
         usegloabals = jsonpath.jsonpath(content.json(), globalport.globals_argument)
-        # print(usegloabals)
+        print(usegloabals)
         if usegloabals:
             # msg = msg.replace(body['use_name'], usegloabals[int(globalport.globals_index)])
             msg = self.JudgeChangeType(body, msg, usegloabals[int(globalport.globals_index)])

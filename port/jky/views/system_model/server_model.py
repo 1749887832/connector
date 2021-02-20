@@ -41,10 +41,10 @@ class Server_handle:
                 content['create_user'] = UserProfile.objects.get(user_id=User.objects.get(id=i.create_user).id).user_name
                 content['create_time'] = i.create_time.strftime('%Y-%m-%d')
                 data.append(content)
-            return JsonResponse(msg_return.Msg().Success(data=data, total=total), safe=False)
+            return JsonResponse(msg_return.Msg().Success(data=data, total=total), safe=False, json_dumps_params={"ensure_ascii": False})
         except Exception as e:
             print(e)
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
     # 修改服务的状态
     @msg_check.login_check
@@ -54,10 +54,10 @@ class Server_handle:
             Server.objects.filter(id=server_id).update(
                 server_status=str(msg_check.Check_type(self).get('server_status')).lower()
             )
-            return JsonResponse(msg_return.Msg().Success(msg='修改成功'), safe=False)
+            return JsonResponse(msg_return.Msg().Success(msg='修改成功'), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             print(e)
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
     # 添加服务
     @msg_check.login_check
@@ -77,12 +77,12 @@ class Server_handle:
                     create_user=self.user.id
                 )
                 new_server.save()
-                return JsonResponse(msg_return.Msg().Success(msg='服务IP添加成功'), safe=False)
+                return JsonResponse(msg_return.Msg().Success(msg='服务IP添加成功'), safe=False, json_dumps_params={'ensure_ascii': False})
             else:
-                return JsonResponse(msg_return.Msg().Success(code=1001, msg='服务IP已存在，无需新建'), safe=False)
+                return JsonResponse(msg_return.Msg().Success(code=1001, msg='服务IP已存在，无需新建'), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             print(e)
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
     # 删除服务
     @msg_check.login_check
@@ -93,11 +93,11 @@ class Server_handle:
         try:
             if len(Server.objects.filter(id=server_id, server_ip=server_ip)) != 0:
                 Server.objects.filter(id=server_id).delete()
-                return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False)
+                return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False, json_dumps_params={'ensure_ascii': False})
             else:
-                return JsonResponse(msg_return.Msg().Error(code=1001, msg='无该服务IP'), safe=False)
+                return JsonResponse(msg_return.Msg().Error(code=1001, msg='无该服务IP'), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
     # 修改服务
     @msg_check.login_check
@@ -113,6 +113,6 @@ class Server_handle:
                 server_ip=serverip,
                 server_describe=server_desc
             )
-            return JsonResponse(msg_return.Msg().Success(msg='修改成功'), safe=False)
+            return JsonResponse(msg_return.Msg().Success(msg='修改成功'), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
-            return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})

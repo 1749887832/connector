@@ -1,6 +1,6 @@
 import requests
 import urllib3
-
+import json
 
 class RequestMsg:
     def __init__(self):
@@ -13,17 +13,18 @@ class RequestMsg:
         # print(headers)
         if requestype == 'POST':
             if headers in ['', 'null', None]:
-                content = requests.post(url=url, json=eval(data), verify=False)
-                print(content.json())
+                print(data)
+                content = requests.post(url=url, json=json.loads(data), verify=False)
+                # print(content.json())
                 # print(content.text)
             else:
                 # print(url, data, requestype)
-                content = requests.post(url=url, headers=eval(headers), json=eval(data), verify=False)
+                content = requests.post(url=url, headers=json.loads(headers), json=json.loads(data), verify=False)
                 # print(content.json())
         else:
             if headers is None:
                 content = requests.get(url=url, params=data, verify=False)
             else:
-                content = requests.get(url=url, params=data, headers=eval(headers), verify=False)
+                content = requests.get(url=url, params=data, headers=json.loads(headers), verify=False)
         # print(content.json())
         return content.json()
