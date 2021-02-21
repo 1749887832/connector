@@ -1,11 +1,17 @@
+import json
+
 from django.http import JsonResponse
 from port.jky.Controller import msg_return, msg_check
-from port.models import Test, UserProfile
+from port.jky.Controller.ParameterSubstitution import Substitution
+from port.jky.Controller.ParameterSubstitution.keyword import ChangeKeyword
+from port.models import Test, UserProfile, Step, Headers, Server
+from port.jky.Controller.Requestreturns.Requestreturn import RequestMsg
 
 
 class Test_handle:
     def __init__(self):
         super().__init__()
+        self.body = None
         self.user = None
 
     @msg_check.login_check
@@ -54,3 +60,26 @@ class Test_handle:
             return JsonResponse(msg_return.Msg().Success(data=data, msg='成功', total=total), safe=False)
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(code=-1, msg=str(e)), safe=False)
+
+    def debugTest(self):
+        try:
+            allTest = msg_check.Check_type(self)
+            testList = allTest.get('testList')
+            serverIp = Server.objects.get(id=allTest.get('serverId')).server_ip
+            print(serverIp)
+            print(testList)
+            for test in testList:
+                # 解析url
+                url = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(Step.objects.get(id=test).step_url))
+                # 解析请求body
+                body = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(Step.objects.get(id=test).request_data))
+                # 获取绑定的请求头，并解析
+                header = Headers.objects.get(id=Step.objects.get(id=test).step_headers).headers_body
+                headers = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(header))
+                jsonData = RequestMsg.requestAndresponse(url=serverIp + url, data=body, requestype=Step.objects.get(id=test).request_type, headers=headers)
+                print(url, '--->', body)
+                print(headers)
+                print(jsonData)
+            return JsonResponse(msg_return.Msg().Success(), safe=False, json_dumps_params={'ensure_ascii': False})
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})

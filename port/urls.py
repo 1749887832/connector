@@ -53,4 +53,8 @@ urlpatterns = [
     path('show/allModel/', sysModel.systemModelClass.showAllModel),
     # 添加模块
     path('add/model/', sysModel.systemModelClass.addModel),
+    # 显示所有的步骤
+    path('show/allCase/',system_step.Step_handle.showAllStep),
+    # 调试所有的步骤
+    path('debugTest/',system_test.Test_handle.debugTest),
 ]

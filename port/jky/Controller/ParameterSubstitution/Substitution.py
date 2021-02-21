@@ -33,7 +33,7 @@ class Substitution:
 
     # 判断参数是否使用了全局变量
     def JudgeStatus(self, msg):
-        print(msg)
+        # print(msg)
         # print(Substitution().AllGlobal)
         for i in Substitution().AllGlobal:
             # print(i['use_name'])
@@ -97,7 +97,7 @@ class Substitution:
                 content = requests.get(url=self.url + globalport.globals_url, headers=json.loads(headers), params=eval(ChangeKeyword().ChangeData(jsondata)), verify=False)
         # print(content.json())
         usegloabals = jsonpath.jsonpath(content.json(), globalport.globals_argument)
-        print(usegloabals)
+        # print(usegloabals)
         if usegloabals:
             # msg = msg.replace(body['use_name'], usegloabals[int(globalport.globals_index)])
             msg = self.JudgeChangeType(body, msg, usegloabals[int(globalport.globals_index)])

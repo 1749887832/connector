@@ -172,6 +172,8 @@ class Part(models.Model):
     use_global = models.CharField(max_length=32, null=True, verbose_name='变量名')
     # 获取的参数名
     argument = models.CharField(max_length=32, null=True, verbose_name='参数名')
+    # 获取参数下标
+    partIndex = models.IntegerField(null=False, verbose_name='下标')
     # 绑定步骤id
     step_id = models.IntegerField(null=True, verbose_name='步骤ID')
 

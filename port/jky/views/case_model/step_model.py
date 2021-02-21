@@ -1,5 +1,6 @@
 import requests
 import urllib3
+from django.db.models import Max
 from django.http import JsonResponse
 
 from port.jky.Controller import msg_check, msg_return, debug_Test
@@ -24,7 +25,7 @@ class Step_handle:
         page = int(test_step.get('page'))
         limit = int(test_step.get('limit'))
         try:
-            all_step = Step.objects.filter(test_id=test_id)
+            all_step = Step.objects.filter(test_id=test_id).order_by('step_order')
             count = len(all_step)
             showstep = all_step[limit * (page - 1):limit * page]
             data = list()
@@ -64,43 +65,53 @@ class Step_handle:
         step_content = add_step.get('step_data')
         # 获取case_id
         case_id = add_step.get('case_id')
-        print(step_delivery, case_id)
-        try:
-            # 写入步骤
-            step_object = Step.objects.create(
-                step_url=step_url,
-                request_type=step_type,
-                request_data=step_body,
-                get_global=step_delivery,
-                create_user=add_step.user_id,
-                step_content=step_content,
-                create_time=msg_return.ReturnTime.getnowTime(),
-                step_order=1,
-                test_id=case_id
-            )
-            step_object.save()
-            step_id = step_object.id
-            # 写入断言参数
-            for i in list(step_assert):
-                Assert.objects.create(
-                    argument=i['name'],
-                    assert_type=i['type'],
-                    assert_expect=i['value'],
-                    argument_type=i['argument_type'],
-                    step_id=step_id
+        # 获取请求头
+        header_value = add_step.get('header_value')
+        if msg_return.JudgeAllIsNull.checkandreturn(header_value, add_step, step_url, step_type, step_body):
+            print(step_delivery, case_id)
+            try:
+                # 查询用例的最大执行顺序
+                maxOrder = Step.objects.filter(test_id=case_id).aggregate(Max('step_order'))
+                # 写入步骤
+                step_object = Step.objects.create(
+                    step_url=step_url,
+                    request_type=step_type,
+                    request_data=step_body,
+                    get_global=step_delivery,
+                    create_user=add_step.user_id,
+                    step_content=step_content,
+                    create_time=msg_return.ReturnTime.getnowTime(),
+                    step_order=maxOrder['step_order__max'] + 1,
+                    test_id=case_id,
+                    step_headers=header_value,
                 )
-            # 写入获取参数
-            if step_delivery:
-                for i in list(step_global):
-                    print(i)
-                    Part.objects.create(
-                        use_global=i['global_name'],
-                        argument=i['argument'],
+                step_object.save()
+                step_id = step_object.id
+                # 写入断言参数
+                for i in list(step_assert):
+                    Assert.objects.create(
+                        argument=i['name'],
+                        assert_type=i['type'],
+                        assert_expect=i['value'],
+                        argument_type=i['argument_type'],
                         step_id=step_id
                     )
-            return JsonResponse(msg_return.Msg().Success(), safe=False)
-        except Exception as e:
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+                # 写入获取参数
+                if step_delivery:
+                    for i in list(step_global):
+                        print(i)
+                        Part.objects.create(
+                            use_global=i['global_name'],
+                            argument=i['urlarument'],
+                            partIndex=i['urlindex'],
+                            step_id=step_id
+                        )
+                return JsonResponse(msg_return.Msg().Success(), safe=False)
+
+            except Exception as e:
+                return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+        else:
+            return JsonResponse(msg_return.Msg().Error(msg='必填参数不能为空'), safe=False, json_dumps_params={'ensure_ascii': False})
 
     """
         author：liuhuangxin
@@ -212,6 +223,24 @@ class Step_handle:
             if len(Part.objects.filter(step_id=step_id)) > 0:
                 Part.objects.filter(step_id=step_id).delete()
             Step.objects.filter(id=step_id).delete()
-            return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False)
+            return JsonResponse(msg_return.Msg().Success(msg='删除成功'), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
-            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False)
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
+
+    @msg_check.login_check
+    def showAllStep(self):
+        try:
+            testID = msg_check.Check_type(self).get('testID')
+            allStep = Step.objects.filter(test_id=testID).order_by('step_order')
+            data = list()
+            for step in allStep:
+                content = dict()
+                content['id'] = step.id
+                content['order'] = step.step_order
+                content['type'] = step.request_type
+                content['url'] = step.step_url
+                content['content'] = step.step_content
+                data.append(content)
+            return JsonResponse(msg_return.Msg().Success(data=data), safe=False, json_dumps_params={'ensure_ascii': False})
+        except Exception as e:
+            return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})

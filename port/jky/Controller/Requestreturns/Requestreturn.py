@@ -2,6 +2,7 @@ import requests
 import urllib3
 import json
 
+
 class RequestMsg:
     def __init__(self):
         super().__init__()
