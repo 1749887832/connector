@@ -4,6 +4,8 @@ import pytest
 import requests
 import jsonpath
 
+from port.jky.Controller.ParameterSubstitution.returnassert import RerunAssert
+
 """
     author:liuhuangxin
     time:2021年1月23日22:05:57
@@ -47,72 +49,7 @@ class Test_Debug_Step:
             # 判断断言参数是否存在
             if result:
                 # print(assert_name['name'])
-                try:
-                    # 判断断言类型和参数类型
-                    if assert_name['type'] == 'equal':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] == int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] == float(assert_name['value'])
-                        else:
-                            assert result[0] == assert_name['value']
-                    elif assert_name['type'] == 'not_equal':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] != int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] != float(assert_name['value'])
-                        else:
-                            assert result[0] != assert_name['value']
-                    elif assert_name['type'] == 'less':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] > int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] > float(assert_name['value'])
-                        else:
-                            assert result[0] > assert_name['value']
-                    elif assert_name['type'] == 'greater':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] < int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] < float(assert_name['value'])
-                        else:
-                            assert result[0] < assert_name['value']
-                    elif assert_name['type'] == 'less_equal':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] <= int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] <= float(assert_name['value'])
-                        else:
-                            assert result[0] <= assert_name['value']
-                    elif assert_name['type'] == 'greater_equal':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] >= int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] >= float(assert_name['value'])
-                        else:
-                            assert result[0] >= assert_name['value']
-                    elif assert_name['type'] == 'in_to':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] in int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] in float(assert_name['value'])
-                        else:
-                            assert result[0] in assert_name['value']
-                    elif assert_name['type'] == 'not_in':
-                        if assert_name['argument_type'] == 'int':
-                            assert result[0] not in int(assert_name['value'])
-                        elif assert_name['argument_type'] == 'float':
-                            assert result[0] not in float(assert_name['value'])
-                        else:
-                            assert result[0] not in assert_name['value']
-                    # else:
-                    #     print('断言失败')
-                    # print(assert_name['name'], '断言成功')
-                    Test_Debug_Step.assert_result.append({'code': 0, 'assert_result': '断言成功'})
-                except Exception as e:
-                    print(e)
-                    # print(assert_name['name'], '断言失败')
-                    Test_Debug_Step.assert_result.append({'code': -1, 'assert_result': '断言失败'})
+                Test_Debug_Step.assert_result.append({'code': 0, 'assert_result': RerunAssert.rAssert(assert_name, result)})
             else:
                 # print('找不到该断言参数', assert_name['name'])
                 Test_Debug_Step.assert_result.append({'code': -1, 'assert_result': '找不到该断言参数'})

@@ -68,7 +68,7 @@ class Step_handle:
         # 获取请求头
         header_value = add_step.get('header_value')
         if msg_return.JudgeAllIsNull.checkandreturn(header_value, add_step, step_url, step_type, step_body):
-            print(step_delivery, case_id)
+            print(step_delivery, case_id, header_value)
             try:
                 # 查询用例的最大执行顺序
                 maxOrder = Step.objects.filter(test_id=case_id).aggregate(Max('step_order'))
@@ -81,10 +81,11 @@ class Step_handle:
                     create_user=add_step.user_id,
                     step_content=step_content,
                     create_time=msg_return.ReturnTime.getnowTime(),
-                    step_order=maxOrder['step_order__max'] + 1,
+                    step_order=(0 if maxOrder['step_order__max'] is None else maxOrder['step_order__max']) + 1,
                     test_id=case_id,
                     step_headers=header_value,
                 )
+                print(1)
                 step_object.save()
                 step_id = step_object.id
                 # 写入断言参数
