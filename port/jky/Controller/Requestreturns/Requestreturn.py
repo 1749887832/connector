@@ -10,11 +10,11 @@ class RequestMsg:
     @staticmethod
     def requestAndresponse(url, data, requestype, headers=None):
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        print(url, data, requestype)
+        # print(url, data, requestype)
         # print(headers)
         if requestype == 'POST':
             if headers in ['', 'null', None]:
-                print(data)
+                # print(data)
                 content = requests.post(url=url, json=json.loads(data), verify=False)
                 # print(content.json())
                 # print(content.text)

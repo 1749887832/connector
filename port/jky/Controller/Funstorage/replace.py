@@ -19,3 +19,17 @@ class Replace:
             chang_data = chang_data.replace(str(i), str(data_dict[i]))
         # print(chang_data)
         return chang_data
+
+    @classmethod
+    def changType(cls, msg):
+        typeDict = {
+            'equal': '等于',
+            'not_equal': '不等于',
+            'less': '小于',
+            'greater': '大于',
+            'less_equal': '小于等于',
+            'greater_equal': '大于等于',
+            'in_to': '包含',
+            'not_in': '不包含',
+        }
+        return typeDict[msg]

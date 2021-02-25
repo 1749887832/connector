@@ -106,7 +106,8 @@ class Test_handle:
                 # print(headers)
                 # print(jsonData)
             # print(batchList)
-            startBath(data=batchList)
-            return JsonResponse(msg_return.Msg().Success(), safe=False, json_dumps_params={'ensure_ascii': False})
+            dataList = startBath(data=batchList)
+            # print(dataList)
+            return JsonResponse(msg_return.Msg().Success(data=dataList), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             return JsonResponse(msg_return.Msg().Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})

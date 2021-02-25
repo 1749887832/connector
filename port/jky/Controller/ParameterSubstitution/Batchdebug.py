@@ -11,39 +11,94 @@ from port.models import Headers, Step
 
 
 class Test_Batch:
-    data = list()
+    data = []
 
     def setup_class(self):
+        # print(Test_Batch.data)
         self.count = dict()
-        Test_Batch().data = Test_Batch().data[0]
-        # print(Test_Batch().data)
-        print('执行这里')
+        self.dataList = []
+        # print('执行这里')
 
     def teardown_class(self):
-        print(self)
-        Test_Batch().data = []
+        self.data = []
 
-    @pytest.mark.parametrize(['stepId', 'serverIp', 'url', 'body', 'requestType', 'isagrument', 'agruments', 'assert_data'], data)
-    def test_batch(self, stepId, serverIp, url, body, requestType, isagrument, agruments, assert_data):
-        headers = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(Headers.objects.get(id=Step.objects.get(id=stepId).step_headers).headers_body))
-        jsonData = RequestMsg.requestAndresponse(url=url, data=Replace.locality(body, self.count), requestype=requestType, headers=headers)
-        # print(jsonData)
-        assertMsg = list()
-        for assertData in assert_data:
-            result = jsonpath.jsonpath(jsonData, assertData['argument'])
-            if result:
-                assertMsg.append({'code': 0, 'assert_result': RerunAssert.rAssert(assertData, result)})
-            else:
-                assertMsg.append({'code': -1, 'assert_result': '找不到该断言参数'})
-        if isagrument:
-            for argument in agruments:
-                self.count[argument['use_global']] = Parameters.GetParameter(jsondata=jsonData, getarument=argument)[0]['msg']
-        # print(jsonData, assertMsg, self.count)
+    """
+        parametrize中data的问题，后续再看
+    """
+
+    # @pytest.mark.parametrize(['stepId', 'serverIp', 'url', 'body', 'requestType', 'isagrument', 'agruments', 'assert_data'], data)
+    # def test_batch(self, stepId, serverIp, url, body, requestType, isagrument, agruments, assert_data):
+    #     headers = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(Headers.objects.get(id=Step.objects.get(id=stepId).step_headers).headers_body))
+    #     requestBody = Replace.locality(body, self.count)
+    #     jsonData = RequestMsg.requestAndresponse(url=url, data=requestBody, requestype=requestType, headers=headers)
+    #     # print(jsonData)
+    #     assertMsg = list()
+    #     for assertData in assert_data:
+    #         result = jsonpath.jsonpath(jsonData, assertData['argument'])
+    #         dictionary1 = {
+    #             'id': assertData['id'],
+    #             'argument': assertData['argument'],
+    #             'type': Replace.changType(assertData['type']),
+    #             'expect': assertData['value'],
+    #             'result': result[0]}
+    #         dictionary3 = dictionary1.copy()
+    #         if result:
+    #             dictionary2 = RerunAssert.rAssert(assertData, result)
+    #         else:
+    #             dictionary2 = {'code': -1, 'assert_result': '找不到该断言参数'}
+    #         dictionary3.update(dictionary2)
+    #         assertMsg.append(dictionary3)
+    #     if isagrument:
+    #         for argument in agruments:
+    #             argumentList = list()
+    #             argumentList.append(argument)
+    #             self.count[argument['use_global']] = Parameters.GetParameter(jsondata=jsonData, getarument=argumentList)[0]['msg']
+    #     self.dataList.append({'responseData': jsonData, 'assertData': assertMsg, 'requestType': requestType, 'requestBody': requestBody, 'stepId': stepId})
+    #     print(self.dataList)
+    # print(jsonData, assertMsg, self.count)
+
+    def test_batch(self):
+        for batch in Test_Batch.data:
+            stepId = batch[0]
+            serverIp = batch[1]
+            url = batch[2]
+            body = batch[3]
+            requestType = batch[4]
+            isagrument = batch[5]
+            agruments = batch[6]
+            assert_data = batch[7]
+            headers = Substitution.Substitution(url=serverIp).JudgeStatus(ChangeKeyword().ChangeData(Headers.objects.get(id=Step.objects.get(id=stepId).step_headers).headers_body))
+            requestBody = Replace.locality(body, self.count)
+            jsonData = RequestMsg.requestAndresponse(url=url, data=requestBody, requestype=requestType, headers=headers)
+            # print(jsonData)
+            assertMsg = list()
+            for assertData in assert_data:
+                result = jsonpath.jsonpath(jsonData, assertData['argument'])
+                dictionary1 = {
+                    'id': assertData['id'],
+                    'argument': assertData['argument'],
+                    'type': Replace.changType(assertData['type']),
+                    'expect': assertData['value'],
+                    'result': result[0]}
+                dictionary3 = dictionary1.copy()
+                if result:
+                    dictionary2 = RerunAssert.rAssert(assertData, result)
+                else:
+                    dictionary2 = {'code': -1, 'assert_result': '找不到该断言参数'}
+                dictionary3.update(dictionary2)
+                assertMsg.append(dictionary3)
+            if isagrument:
+                for argument in agruments:
+                    argumentList = list()
+                    argumentList.append(argument)
+                    self.count[argument['use_global']] = Parameters.GetParameter(jsondata=jsonData, getarument=argumentList)[0]['msg']
+            self.dataList.append({'responseData': jsonData, 'assertData': assertMsg, 'requestType': requestType, 'requestBody': requestBody, 'stepId': stepId})
+            # print(self.dataList)
+            # print(jsonData, assertMsg, self.count)
 
 
 def startBath(data):
     for allData in data:
         Test_Batch().data.append(allData)
-    # print(data)
-    # print(Test_Batch().data[0])
     pytest.main(['port/jky/Controller/ParameterSubstitution/Batchdebug.py'])
+    return Test_Batch().dataList

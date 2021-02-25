@@ -37,8 +37,10 @@ class Step_handle:
                 content['request_data'] = step.request_data
                 content['get_global'] = step.get_global
                 content['response_result'] = step.response_result
+                content['useGlobal'] = [globalname.use_global for globalname in Part.objects.filter(step_id=step.id)]
                 content['create_time'] = step.create_time.strftime('%Y-%m-%d')
                 content['create_user'] = UserProfile.objects.get(user_id=step.create_user).user_name
+                content['step_content'] = step.step_content
                 content['result'] = step.result
                 content['order'] = step.step_order
                 data.append(content)
@@ -240,6 +242,7 @@ class Step_handle:
                 content['order'] = step.step_order
                 content['type'] = step.request_type
                 content['url'] = step.step_url
+                content['responseData'] = {}
                 content['content'] = step.step_content
                 data.append(content)
             return JsonResponse(msg_return.Msg().Success(data=data), safe=False, json_dumps_params={'ensure_ascii': False})

@@ -65,8 +65,8 @@ class RerunAssert:
             # else:
             #     print('断言失败')
             # print(assert_name['name'], '断言成功')
-            return '断言成功'
+            return {'code': 0, 'assert_result': '断言成功'}
         except Exception as e:
             print(e)
             # print(assert_name['name'], '断言失败')
-            return '断言失败'
+            return {'code': -1, 'assert_result': '断言失败'}
