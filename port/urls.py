@@ -7,6 +7,7 @@ from port.jky.views.case_model import test_model as system_test
 from port.jky.views.case_model import step_model as system_step
 from port.jky.views.user_model import show_user as show_user
 from port.jky.views.system_model import systemModel as sysModel
+from port.jky.views.test.testcell import addTest as AddTest
 
 urlpatterns = [
     # 登录接口
@@ -57,4 +58,6 @@ urlpatterns = [
     path('show/allCase/', system_step.Step_handle.showAllStep),
     # 调试所有的步骤
     path('debugTest/', system_test.Test_handle.debugTest),
+    # 添加测试单
+    path('add/test/cell/', AddTest.AddTestClass.addTest),
 ]

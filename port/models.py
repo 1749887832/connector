@@ -240,3 +240,23 @@ class systemModel(models.Model):
     createUserID = models.IntegerField(null=False, verbose_name='创建人')
     # 创建时间
     createTime = models.DateTimeField(null=False, verbose_name='创建时间')
+
+
+class Cell(models.Model):
+    id = models.AutoField(primary_key=True)
+    # 所属项目
+    belongProject = models.CharField(max_length=32, null=False, verbose_name='所属项目')
+    # 负责人
+    person = models.IntegerField(null=False, verbose_name='负责人')
+    # 名称
+    testName = models.CharField(max_length=32, verbose_name='名称')
+    # 开始时间
+    startTime = models.DateTimeField(null=False, verbose_name='开始时间')
+    # 结束时间
+    endTime = models.DateTimeField(null=False, verbose_name='结束时间')
+    # 描述
+    content = models.CharField(max_length=128, null=False, verbose_name='描述')
+    # 创建人
+    createUser = models.IntegerField(null=False, verbose_name='创建人')
+    # 创建时间
+    createTime = models.DateTimeField(null=False, verbose_name='创建时间')
